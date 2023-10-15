@@ -30,12 +30,12 @@ Use `./gradlew publishAllPublicationsToReposiliteRepository` to publish to a rep
 Use `./gradlew publish` to publish to both.
 
 ## Building
-Use `./gradlew build` to build the project.
+Use `./gradlew clean build` to build the project.
 
 ## Final steps
 - Change all mentions of `BaseProject` to your project name.
 - Change the maven coordinates in the `gradle.properties` file.
-- Change the author in all files. (Replace `FlorianMichael/EnZaXD with` your own name)
+- Change the author in all files. (Replace `FlorianMichael/EnZaXD` with your own name)
 - Update the license header located in `.idea/copyright/Apache_2_0.xml`
 - Update the publishing section in the build.gradle file.
 - Delete the all sections between the `Setup the required environment variables` and `Final steps` sections.
