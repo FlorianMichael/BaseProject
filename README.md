@@ -52,7 +52,7 @@ If you just want to talk or need help with BaseProject feel free to join my
 
 ## How to add this to your project
 ### Gradle/Maven
-To use DietrichEvents2 with Gradle/Maven you can use [Maven Central](https://mvnrepository.com/artifact/de.florianmichael/BaseProject), [Lenni0451 server](https://maven.lenni0451.net/#/releases/de/florianmichael/BaseProject) or [Jitpack](https://jitpack.io/#FlorianMichael/BaseProject).  
+To use BaseProject with Gradle/Maven you can use [Maven Central](https://mvnrepository.com/artifact/de.florianmichael/BaseProject), [Lenni0451 server](https://maven.lenni0451.net/#/releases/de/florianmichael/BaseProject) or [Jitpack](https://jitpack.io/#FlorianMichael/BaseProject).  
 You can also find instructions how to implement it into your build script there.
 
 ### Jar File
