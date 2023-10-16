@@ -5,7 +5,7 @@ build/
 out/
 classes/
 
-# EClipse
+# Eclipse
 
 *.launch
 
