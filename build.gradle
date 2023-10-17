@@ -4,9 +4,11 @@ plugins {
     id "signing"
 }
 
-archivesBaseName = project.maven_name
-version = project.maven_version
-group = project.maven_group
+base {
+    archivesName = project.maven_name
+    version = project.maven_version
+    group = project.maven_group
+}
 
 configurations {
     api.extendsFrom library
@@ -22,13 +24,13 @@ dependencies {
     // You can use library "org.apache.commons:commons-lang3:3.12.0" to include the dependency in the jar file as well
 }
 
-tasks.withType(JavaCompile).configureEach {
-    it.options.release = 17
-}
-
 java {
     withSourcesJar()
     withJavadocJar()
+
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
 
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
