@@ -35,7 +35,7 @@ Use `./gradlew clean build` to build the project.
 ## Final steps
 - Change all mentions of `BaseProject` to your project name.
 - Change the maven coordinates in the `gradle.properties` file.
-- Change the author in all files. (Replace `FlorianMichael/EnZaXD` with your own name)
+- Change the author/email in all files. (Replace `FlorianMichael/EnZaXD` with your own name, ...)
 - Update the license header located in `.idea/copyright/Apache_2_0.xml`
 - Update the publishing section in the build.gradle file.
 - Delete the all sections between the `Setup the required environment variables` and `Final steps` sections.
@@ -52,7 +52,7 @@ If you just want to talk or need help with BaseProject feel free to join my
 
 ## How to add this to your project
 ### Gradle/Maven
-To use BaseProject with Gradle/Maven you can use [Maven Central](https://mvnrepository.com/artifact/de.florianmichael/BaseProject), [Lenni0451 server](https://maven.lenni0451.net/#/releases/de/florianmichael/BaseProject) or [Jitpack](https://jitpack.io/#FlorianMichael/BaseProject).  
+To use BaseProject with Gradle/Maven you can use [Maven Central](https://mvnrepository.com/artifact/de.florianmichael/BaseProject), [Lenni0451's Maven](https://maven.lenni0451.net/#/releases/de/florianmichael/BaseProject) or [Jitpack](https://jitpack.io/#FlorianMichael/BaseProject).  
 You can also find instructions how to implement it into your build script there.
 
 ### Jar File
