@@ -45,10 +45,7 @@ Use `./gradlew clean build` to build the project.
 I wanted to have a template project for my own projects, which I can use to quickly start a new project.
 
 ## Contact
-If you encounter any issues, please report them on the
-[issue tracker](https://github.com/FlorianMichael/BaseProject/issues).  
-If you just want to talk or need help with BaseProject feel free to join my
-[Discord](https://discord.gg/BwWhCHUKDf).
+If you encounter any issues, please report them on the [issue tracker](https://github.com/FlorianMichael/BaseProject/issues). If you just want to talk or need help with BaseProject feel free to join my [Discord](https://discord.gg/BwWhCHUKDf).
 
 ## How to add this to your project
 ### Gradle/Maven
