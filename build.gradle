@@ -19,6 +19,10 @@ repositories {
 }
 
 dependencies {
+    // Add for unit testing
+    // testImplementation platform("org.junit:junit-bom:5.9.3")
+    // testImplementation "org.junit.jupiter:junit-jupiter"
+
     // Add your dependencies here
     // Example: implementation "org.apache.commons:commons-lang3:3.14.0"
     // You can use library "org.apache.commons:commons-lang3:3.14.0" to include the dependency in the jar file as well
@@ -62,6 +66,15 @@ jar {
         }
     }
 }
+
+// Add for unit testing
+//test {
+//    useJUnitPlatform()
+//    testLogging {
+//        events "passed", "skipped", "failed"
+//    }
+//    maxParallelForks Runtime.runtime.availableProcessors()
+//}
 
 publishing {
     repositories {
