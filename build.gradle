@@ -5,9 +5,10 @@ plugins {
 }
 
 base {
+    group = project.maven_group
     archivesName = project.maven_name
     version = project.maven_version
-    group = project.maven_group
+    description = project.maven_description
 }
 
 configurations {
@@ -109,7 +110,7 @@ publishing {
 
             pom {
                 name = artifactId
-                description = "Gradle template project with jar signing, publishing to maven central and GitHub workflows."
+                description = project.description
                 url = "https://github.com/FlorianMichael/BaseProject"
                 licenses {
                     license {

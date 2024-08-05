@@ -19,7 +19,7 @@ reposilitePassword=<your account password>
 # See https://central.sonatype.org/publish/publish-maven-gradle/
 # This will also require to set up the signing properties
 ossrhUsername=<your account name>
-ossrhPassword=<your account password>
+ossrhPassword=<your account password> # This is an access token nowadays
 ```
 
 ## Publishing
