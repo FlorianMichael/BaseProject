@@ -2,6 +2,7 @@ plugins {
     id "java"
     id "maven-publish"
     id "signing"
+    //id "idea"
 }
 
 base {
@@ -75,6 +76,15 @@ jar {
 //        events "passed", "skipped", "failed"
 //    }
 //    maxParallelForks Runtime.runtime.availableProcessors()
+//}
+
+// Uncomment to exclude specific folders from Intellij's indexing
+//idea {
+//    module {
+//        ["run"].each {
+//            excludeDirs << file("$it")
+//        }
+//    }
 //}
 
 publishing {
