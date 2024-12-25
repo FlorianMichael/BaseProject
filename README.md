@@ -49,7 +49,7 @@ If you encounter any issues, please report them on the [issue tracker](https://g
 
 ## How to add this to your project
 ### Gradle/Maven
-To use BaseProject with Gradle/Maven you can use [Maven Central](https://mvnrepository.com/artifact/de.florianmichael/BaseProject), [Lenni0451's Maven](https://maven.lenni0451.net/#/releases/de/florianmichael/BaseProject) or [Jitpack](https://jitpack.io/#FlorianMichael/BaseProject).  
+To use BaseProject with Gradle/Maven you can use [Maven Central](https://mvnrepository.com/artifact/de.florianmichael/BaseProject) or [Lenni0451's Maven](https://maven.lenni0451.net/#/releases/de/florianmichael/BaseProject).  
 You can also find instructions how to implement it into your build script there.
 
 ### Jar File
