@@ -16,10 +16,11 @@ configurations {
     api.extendsFrom library
 }
 
-configurations.all {
-    resolutionStrategy.cacheDynamicVersionsFor 5, 'minutes'
-    resolutionStrategy.cacheChangingModulesFor 5, 'minutes'
-}
+// Add to refresh local caching more often
+// configurations.all {
+//     resolutionStrategy.cacheDynamicVersionsFor 5, 'minutes'
+//     resolutionStrategy.cacheChangingModulesFor 5, 'minutes'
+// }
 
 repositories {
     mavenCentral()
