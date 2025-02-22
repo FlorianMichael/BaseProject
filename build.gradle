@@ -17,10 +17,10 @@ configurations {
 }
 
 // Add to refresh local caching more often
-// configurations.all {
-//     resolutionStrategy.cacheDynamicVersionsFor 5, 'minutes'
-//     resolutionStrategy.cacheChangingModulesFor 5, 'minutes'
-// }
+//configurations.all {
+//    resolutionStrategy.cacheDynamicVersionsFor 5, 'minutes'
+//    resolutionStrategy.cacheChangingModulesFor 5, 'minutes'
+//}
 
 repositories {
     mavenCentral()
@@ -28,12 +28,12 @@ repositories {
 
 dependencies {
     // Add for unit testing
-    // testImplementation platform("org.junit:junit-bom:5.10.3")
-    // testImplementation "org.junit.jupiter:junit-jupiter"
+    //testImplementation platform("org.junit:junit-bom:5.10.3")
+    //testImplementation "org.junit.jupiter:junit-jupiter"
 
-    // Add your dependencies here
-    // Example: implementation "org.apache.commons:commons-lang3:3.14.0"
-    // You can use library "org.apache.commons:commons-lang3:3.14.0" to include the dependency in the jar file as well
+    // Add your dependencies here, e.g.:
+    //implementation "org.apache.commons:commons-lang3:3.14.0"
+    //library "org.apache.commons:commons-lang3:3.14.0" // will also be included in the jar file as well
 }
 
 java {
