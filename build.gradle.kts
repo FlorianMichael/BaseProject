@@ -5,11 +5,12 @@ plugins {
     //idea
 }
 
+group = property("maven_group") as String
+version = property("maven_version") as String
+description = property("maven_description") as String
+
 base {
-    group = property("maven_group") as String
     archivesName.set(property("maven_name") as String)
-    version = property("maven_version") as String
-    description = property("maven_description") as String
 }
 
 val library: Configuration by configurations.creating {
@@ -48,37 +49,45 @@ java {
     targetCompatibility = JavaVersion.VERSION_21
 }
 
-tasks.jar {
-    // Add all dependencies which are included using "library" to the jar file and exclude the META-INF folder
-    dependsOn(library)
-    from({
-        library.map { zipTree(it) }
-    }) {
-        exclude("META-INF/*.RSA", "META-INF/*.SF", "META-INF/*.DSA")
+tasks {
+    jar {
+        val projectName = project.name
+
+        // Add all dependencies which are included using "library" to the jar file and exclude the META-INF folder
+        dependsOn(library)
+        from({
+            library.map { zipTree(it) }
+        }) {
+            exclude("META-INF/*.RSA", "META-INF/*.SF", "META-INF/*.DSA")
+        }
+
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+        manifest {
+            attributes(
+                "Main-Class" to "de.florianmichael.baseproject.Example"
+            )
+        }
+
+        // Rename the project's license file to LICENSE_<project_name> to avoid conflicts
+        from("LICENSE") {
+            rename { "LICENSE_${projectName}" }
+        }
     }
 
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-
-    manifest {
-        attributes(
-            "Main-Class" to "de.florianmichael.baseproject.Example"
-        )
+    withType<PublishToMavenRepository>().configureEach {
+        dependsOn(withType<Sign>())
     }
 
-    // Rename the project's license file to LICENSE_<project_name> to avoid conflicts
-    from("LICENSE") {
-        rename { "LICENSE_${project.name}" }
-    }
+    // For unit testing
+    //test {
+        //useJUnitPlatform()
+        //testLogging {
+            //events("passed", "skipped", "failed")
+        //}
+        //maxParallelForks = Runtime.getRuntime().availableProcessors()
+    //}
 }
-
-// For unit testing
-//tasks.test {
-//    useJUnitPlatform()
-//    testLogging {
-//        events("passed", "skipped", "failed")
-//    }
-//    maxParallelForks = Runtime.getRuntime().availableProcessors()
-//}
 
 // Uncomment to exclude specific folders from IntelliJ indexing
 //idea {
@@ -149,6 +158,3 @@ signing {
     sign(publishing.publications["maven"])
 }
 
-tasks.withType<PublishToMavenRepository>().configureEach {
-    dependsOn(tasks.withType<Sign>())
-}
