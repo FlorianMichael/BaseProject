@@ -154,7 +154,6 @@ publishing {
 
 signing {
     isRequired = false
-    sign(configurations.archives.get())
     sign(publishing.publications["maven"])
 }
 
