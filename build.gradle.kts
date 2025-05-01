@@ -80,13 +80,13 @@ tasks {
     }
 
     // For unit testing
-    //test {
-        //useJUnitPlatform()
-        //testLogging {
-            //events("passed", "skipped", "failed")
-        //}
-        //maxParallelForks = Runtime.getRuntime().availableProcessors()
-    //}
+//    test {
+//        useJUnitPlatform()
+//        testLogging {
+//            events("passed", "skipped", "failed")
+//        }
+//        maxParallelForks = Runtime.getRuntime().availableProcessors()
+//    }
 }
 
 // Uncomment to exclude specific folders from IntelliJ indexing
