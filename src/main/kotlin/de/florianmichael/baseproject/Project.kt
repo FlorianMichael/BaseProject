@@ -37,7 +37,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
  * - License file renaming to avoid name conflicts
  * - Compiler encoding configuration
  *
- * Requires the following Gradle properties:
+ * Supports the following Gradle properties:
  * - `project_group`: The group ID of the project
  * - `project_version`: The version of the project
  * - `project_description`: A short description of the project
@@ -52,35 +52,24 @@ fun Project.setupProject() {
 }
 
 /**
- * Sets the basic metadata for the project: group and version.
- *
- * Required project properties:
- * - `project_group`
- * - `project_version`
- */
-fun Project.configureCoreDetails() {
-    group = property("project_group") as String
-    version = property("project_version") as String
-}
-
-/**
  * Configures detailed project metadata:
  * - Applies the `base` plugin
  * - Sets project description
  * - Configures the archive name
  *
- * Required project properties:
+ * Optional project properties:
  * - `project_group`
  * - `project_version`
  * - `project_description`
  * - `project_name`
  */
 fun Project.configureProjectDetails() {
-    configureCoreDetails()
-    description = property("project_description") as String
+    findProperty("project_group")?.let { group = it as String }
+    findProperty("project_version")?.let { version = it as String }
+    findProperty("project_description")?.let { description = it as String }
     apply(plugin = "base")
     extensions.getByType(BasePluginExtension::class.java).apply {
-        archivesName.set(property("project_name") as String)
+        findProperty("project_name")?.let { archivesName.set(it as String) }
     }
 }
 
