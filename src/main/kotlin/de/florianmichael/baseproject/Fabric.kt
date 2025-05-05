@@ -20,6 +20,8 @@ package de.florianmichael.baseproject
 import net.fabricmc.loom.api.LoomGradleExtensionAPI
 import net.fabricmc.loom.api.fabricapi.FabricApiExtension
 import org.gradle.api.Project
+import org.gradle.api.artifacts.Configuration
+import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.expand
 import org.gradle.kotlin.dsl.maven
@@ -110,6 +112,82 @@ fun Project.setupFabric(mappings: MappingsConfigurer = mojangMapped(), accessWid
     }
 
     excludeRunFolder()
+}
+
+/**
+ * Creates or retrieves the `jij` configuration and sets it to be extended by:
+ * - `implementation`
+ * - `include`
+ *
+ * This setup is commonly used for Java-in-Jar (JiJ) dependencies in standard Java projects.
+ * Dependencies added to `jij` will be treated as compile/runtime dependencies and will be bundled into the final jar.
+ *
+ * @return The created or existing `jij` configuration.
+ */
+fun Project.configureJij(): Configuration {
+    val jijConfig = configurations.maybeCreate("jij")
+
+    configurations.getByName("implementation").extendsFrom(jijConfig)
+    configurations.getByName("include").extendsFrom(jijConfig)
+
+    return jijConfig
+}
+
+/**
+ * Creates or retrieves the `modJij` configuration and sets it to be extended by:
+ * - `modImplementation`
+ * - `modCompileOnlyApi`
+ * - `include`
+ *
+ * This setup is intended for Fabric or mod-based projects using Java-in-Jar (JiJ) dependencies.
+ * It ensures the dependencies are available at compile-time, runtime, and are bundled into the final mod jar.
+ *
+ * @return The created or existing `modJij` configuration.
+ */
+fun Project.configureModJij(): Configuration {
+    val jijConfig = configurations.maybeCreate("modJij")
+
+    configurations.getByName("modImplementation").extendsFrom(jijConfig)
+    configurations.getByName("modCompileOnlyApi").extendsFrom(jijConfig)
+    configurations.getByName("include").extendsFrom(jijConfig)
+
+    return jijConfig
+}
+
+/**
+ * Adds a submodule which is a Fabric mod to the project.
+ */
+fun Project.includeFabricSubmodule(name: String) {
+    dependencies {
+        project(mapOf("path" to ":$name", "configuration" to "namedElements")).apply {
+            "implementation"(this)
+            "compileOnlyApi"(this)
+        }
+        "include"(project(":$name"))
+    }
+}
+
+/**
+ * Add support to the jar in jar system from Fabric to support transitive dependencies by manually proxying them into the jar.
+ */
+fun Project.processJijDependencies() {
+    afterEvaluate {
+        val jijConfig = configurations.findByName("jij") ?: return@afterEvaluate
+
+        jijConfig.incoming.resolutionResult.allDependencies.forEach { dep ->
+            val requested = dep.requested.displayName
+
+            val compileOnlyDep = dependencies.create(requested) {
+                isTransitive = false
+            }
+
+            val implDep = dependencies.create(compileOnlyDep)
+
+            dependencies.add("compileOnlyApi", compileOnlyDep)
+            dependencies.add("implementation", implDep)
+            dependencies.add("include", compileOnlyDep)
+        }
+    }
 }
 
 /**
