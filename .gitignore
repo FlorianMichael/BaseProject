@@ -30,4 +30,5 @@ bin/
 
 # Misc
 
+.kotlin/
 run/

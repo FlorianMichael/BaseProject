@@ -15,12 +15,23 @@
  * limitations under the License.
  */
 
-package de.florianmichael.baseproject;
+package de.florianmichael.baseproject
 
-public class Example {
+import org.gradle.api.Project
+import java.util.concurrent.TimeUnit
 
-    public static void main(String[] args) {
-        System.out.println("Welcome to Java!");
+/**
+ * Configures caching strategies for dynamic and changing modules to improve build performance.
+ *
+ * Caches:
+ * - Dynamic versions: 5 minutes
+ * - Changing modules: 5 minutes
+ */
+fun Project.cacheDynamicAndChangingModules() {
+    configurations.all {
+        resolutionStrategy.apply {
+            cacheDynamicVersionsFor(5, TimeUnit.MINUTES)
+            cacheChangingModulesFor(5, TimeUnit.MINUTES)
+        }
     }
-
 }
