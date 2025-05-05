@@ -202,6 +202,10 @@ fun Project.processJijDependencies() {
  * @return The Minecraft version string to use for metadata.
  */
 fun Project.mcVersion(): String {
+    if (!project.hasProperty("supported_minecraft_versions")) {
+        return property("minecraft_version") as String
+    }
+
     val supportedVersions = property("supported_minecraft_versions") as String
     return supportedVersions.ifEmpty {
         property("minecraft_version") as String
