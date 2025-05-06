@@ -12,7 +12,7 @@ description = property("project_description") as String
 
 dependencies {
     api("org.jetbrains.kotlin:kotlin-gradle-plugin:2.1.20")
-    compileOnly("net.fabricmc:fabric-loom:1.10-SNAPSHOT")
+    compileOnly("net.fabricmc:fabric-loom:1.11.0-alpha.20")
 }
 
 java {
