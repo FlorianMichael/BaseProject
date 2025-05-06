@@ -22,6 +22,8 @@ import org.gradle.api.Project
 import org.gradle.api.plugins.BasePluginExtension
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.tasks.compile.JavaCompile
+import org.gradle.api.tasks.javadoc.Javadoc
+import org.gradle.external.javadoc.StandardJavadocDocletOptions
 import org.gradle.jvm.tasks.Jar
 import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.kotlin.dsl.apply
@@ -46,6 +48,7 @@ fun Project.setupProject() {
     setupJava()
     renameLicenseFile()
     configureEncoding()
+    hideBuildWarnings()
 }
 
 /**
@@ -76,6 +79,21 @@ fun Project.configureProjectDetails() {
 fun Project.configureEncoding() {
     tasks.withType(JavaCompile::class.java).configureEach {
         options.encoding = "UTF-8"
+    }
+    extensions.getByType(Javadoc::class.java).apply {
+        options.encoding = "UTF-8"
+    }
+}
+
+/**
+ * Hides build warnings by configuring the Javadoc and Java compile tasks.
+ */
+fun Project.hideBuildWarnings() {
+    tasks.withType(JavaCompile::class.java).configureEach {
+        options.compilerArgs.addAll(listOf("-nowarn", "-Xlint:-unchecked", "-Xlint:-deprecation"))
+    }
+    extensions.getByType(Javadoc::class.java).apply {
+        (options as StandardJavadocDocletOptions).addStringOption("Xdoclint:none", "-quiet")
     }
 }
 
