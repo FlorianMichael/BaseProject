@@ -217,6 +217,16 @@ fun Project.mcVersion(): String {
 }
 
 /**
+ * Adds core Fabric API modules to the project and directly shades them into the jar using the `jij` configuration.
+ *
+ * See [coreFabricApiModules] for details on the modules added.
+ */
+fun Project.includeCoreFabricApiModules() {
+    configureModJij()
+    coreFabricApiModules("modJij")
+}
+
+/**
  * Adds core Fabric API modules to the project.
  *
  * Modules added:
@@ -227,17 +237,21 @@ fun Project.mcVersion(): String {
  * - `fabric-lifecycle-events-v1`
  *
  * Requires that the `fabric-loom` plugin is applied.
+ * @param configuration The configuration to add the modules to. Defaults to `modImplementation`.
  * @param version The version of the Fabric API to use. Defaults to the value of `fabric_api_version` property.
  */
-fun Project.coreFabricApiModules(version: String = property("fabric_api_version") as String) {
+fun Project.coreFabricApiModules(
+    configuration: String = "modImplementation",
+    version: String = property("fabric_api_version") as String
+) {
     pluginManager.withPlugin("fabric-loom") {
         val fabricApi = extensions.getByType(FabricApiExtension::class.java)
         dependencies {
-            "modImplementation"(fabricApi.module("fabric-api-base", version))
-            "modImplementation"(fabricApi.module("fabric-resource-loader-v0", version))
-            "modImplementation"(fabricApi.module("fabric-screen-api-v1", version))
-            "modImplementation"(fabricApi.module("fabric-key-binding-api-v1", version))
-            "modImplementation"(fabricApi.module("fabric-lifecycle-events-v1", version))
+            configuration(fabricApi.module("fabric-api-base", version))
+            configuration(fabricApi.module("fabric-resource-loader-v0", version))
+            configuration(fabricApi.module("fabric-screen-api-v1", version))
+            configuration(fabricApi.module("fabric-key-binding-api-v1", version))
+            configuration(fabricApi.module("fabric-lifecycle-events-v1", version))
         }
     }
 }
