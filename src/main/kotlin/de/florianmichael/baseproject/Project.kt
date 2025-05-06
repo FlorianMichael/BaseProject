@@ -27,6 +27,7 @@ import org.gradle.external.javadoc.StandardJavadocDocletOptions
 import org.gradle.jvm.tasks.Jar
 import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.kotlin.dsl.apply
+import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmExtension
 
 /**
@@ -80,7 +81,7 @@ fun Project.configureEncoding() {
     tasks.withType(JavaCompile::class.java).configureEach {
         options.encoding = "UTF-8"
     }
-    extensions.getByType(Javadoc::class.java).apply {
+    tasks.withType(Javadoc::class.java).configureEach {
         options.encoding = "UTF-8"
     }
 }
@@ -92,7 +93,7 @@ fun Project.hideBuildWarnings() {
     tasks.withType(JavaCompile::class.java).configureEach {
         options.compilerArgs.addAll(listOf("-nowarn", "-Xlint:-unchecked", "-Xlint:-deprecation"))
     }
-    extensions.getByType(Javadoc::class.java).apply {
+    tasks.withType(Javadoc::class.java).configureEach {
         (options as StandardJavadocDocletOptions).addStringOption("Xdoclint:none", "-quiet")
     }
 }
