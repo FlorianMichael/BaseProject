@@ -83,7 +83,10 @@ fun Project.configureLenni0451Repository() {
             "https://maven.lenni0451.net/" +
                 if (project.version.toString().endsWith("SNAPSHOT")) "snapshots" else "releases"
         )
-        credentials(PasswordCredentials::class)
+        credentials {
+            username = findProperty("reposiliteUsername") as String?
+            password = findProperty("reposilitePassword") as String?
+        }
         authentication {
             create<BasicAuthentication>("basic")
         }
@@ -110,7 +113,11 @@ fun Project.configureOssrhRepository() {
             if (project.version.toString().endsWith("SNAPSHOT")) snapshotsUrl
             else releasesUrl
         )
-        credentials(PasswordCredentials::class)
+
+        credentials {
+            username = findProperty("ossrhUsername") as String?
+            password = findProperty("ossrhPassword") as String?
+        }
         authentication {
             create<BasicAuthentication>("basic")
         }
@@ -128,7 +135,10 @@ fun Project.configureViaRepository() {
     repositories.maven {
         name = "Via"
         url = uri("https://repo.viaversion.com/")
-        credentials(PasswordCredentials::class)
+        credentials {
+            username = findProperty("ViaUsername") as String?
+            password = findProperty("ViaPassword") as String?
+        }
         authentication {
             create<BasicAuthentication>("basic")
         }
