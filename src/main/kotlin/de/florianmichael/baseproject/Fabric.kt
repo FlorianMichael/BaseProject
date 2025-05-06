@@ -51,6 +51,8 @@ fun yarnMapped(version: String? = null): MappingsConfigurer = {
  *
  * Required project property:
  * - `parchment_version`: Version of Parchment mappings to use.
+ *
+ * @param parchment Optional override for the Parchment version.
  */
 fun mojangMapped(parchment: String? = null): MappingsConfigurer = {
     val parchmentVersion = parchment ?: property("parchment_version") as String
@@ -156,6 +158,8 @@ fun Project.configureModJij(): Configuration {
 
 /**
  * Adds a submodule which is a Fabric mod to the project.
+ *
+ * @param name The name of the submodule
  */
 fun Project.includeFabricSubmodule(name: String) {
     dependencies {
@@ -215,9 +219,6 @@ fun Project.mcVersion(): String {
 /**
  * Adds core Fabric API modules to the project.
  *
- * Required project property:
- * - `fabric_api_version`: The version of the Fabric API to use.
- *
  * Modules added:
  * - `fabric-api-base`
  * - `fabric-resource-loader-v0`
@@ -226,6 +227,7 @@ fun Project.mcVersion(): String {
  * - `fabric-lifecycle-events-v1`
  *
  * Requires that the `fabric-loom` plugin is applied.
+ * @param version The version of the Fabric API to use. Defaults to the value of `fabric_api_version` property.
  */
 fun Project.coreFabricApiModules(version: String = property("fabric_api_version") as String) {
     pluginManager.withPlugin("fabric-loom") {

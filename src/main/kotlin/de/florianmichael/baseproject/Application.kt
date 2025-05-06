@@ -25,8 +25,8 @@ import org.gradle.kotlin.dsl.attributes
  * Configures the application JAR to specify the main class in the manifest.
  * Also excludes the `run/` folder from IntelliJ's project model.
  *
- * Required project property:
- * - `application_main`: Fully qualified name of the main class to use in the JAR manifest.
+ * @param mainClass the fully qualified name of the main class to use in the JAR manifest.
+ * Defaults to the `application_main` project property if not specified.
  */
 fun Project.configureApplication(mainClass: String = project.property("application_main") as String) {
     tasks.named("jar", Jar::class.java).configure {

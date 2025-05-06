@@ -37,11 +37,13 @@ import org.gradle.plugins.signing.SigningExtension
  *
  * Required project property:
  * - `publishing_distribution`: GitHub/GitLab URL used for license and SCM metadata
+ *
+ * @param maintainers List of developers to include in the POM metadata.
  */
-fun Project.setupPublishing() {
+fun Project.setupPublishing(maintainers: List<DeveloperInfo>) {
     configureLenni0451Repository()
     configureOssrhRepository()
-    configurePublishing()
+    configurePublishing(maintainers = maintainers)
 }
 
 /**
@@ -55,10 +57,12 @@ fun Project.setupPublishing() {
  *
  * Authentication:
  * - Requires basic authentication for the ViaVersion repository (set via Gradle credentials).
+ *
+ * @param maintainers List of developers to include in the POM metadata.
  */
-fun Project.setupViaPublishing() {
+fun Project.setupViaPublishing(maintainers: List<DeveloperInfo>) {
     configureViaRepository()
-    configurePublishing()
+    configurePublishing(maintainers = maintainers)
 }
 
 /**
@@ -131,6 +135,12 @@ fun Project.configureViaRepository() {
     }
 }
 
+data class DeveloperInfo(
+    val id: String,
+    val name: String,
+    val email: String
+)
+
 /**
  * Configures Maven publishing and signing using the `maven-publish` and `signing` plugins.
  *
@@ -144,11 +154,16 @@ fun Project.configureViaRepository() {
  * - `licenseUrl`: URL to license file in the repository
  *
  * Also applies GPG signing (signing is optional and controlled by presence of keys).
+ * @param distribution The distribution URL for the project (e.g., GitHub/GitLab URL).
+ * @param license The license name to use in the POM (default: "Apache-2.0 license").
+ * @param licenseUrl The URL to the license file in the repository (default: GitHub URL).
+ * @param maintainers List of developers to include in the POM metadata.
  */
 fun Project.configurePublishing(
     distribution: String = property("publishing_distribution") as String,
     license: String = "Apache-2.0 license",
-    licenseUrl: String = "https://$distribution/blob/main/LICENSE"
+    licenseUrl: String = "https://$distribution/blob/main/LICENSE",
+    maintainers: List<DeveloperInfo>
 ) {
     apply(plugin = "maven-publish")
     extensions.getByType(PublishingExtension::class.java).apply {
@@ -171,10 +186,12 @@ fun Project.configurePublishing(
                         }
                     }
                     developers {
-                        developer {
-                            id.set("FlorianMichael")
-                            name.set("EnZaXD")
-                            email.set("florian.michael07@gmail.com")
+                        maintainers.forEach { dev ->
+                            developer {
+                                id.set(dev.id)
+                                name.set(dev.name)
+                                email.set(dev.email)
+                            }
                         }
                     }
                     scm {
