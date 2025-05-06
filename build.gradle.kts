@@ -27,6 +27,10 @@ tasks {
             rename { "LICENSE_${projectName}" }
         }
     }
+
+    publishPlugins {
+        notCompatibleWithConfigurationCache("plugin-publish plugin is not compatible with the configuration cache yet.")
+    }
 }
 
 gradlePlugin {
