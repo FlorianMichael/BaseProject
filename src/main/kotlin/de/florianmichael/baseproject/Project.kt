@@ -25,10 +25,7 @@ import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.jvm.tasks.Jar
 import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.getByType
-import org.gradle.kotlin.dsl.withType
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmExtension
 
 /**
  * Sets up the Gradle project with common configurations including:
@@ -99,19 +96,11 @@ fun Project.setupJava(version: Int = project.property("project_jvm_version").toS
         sourceCompatibility = JavaVersion.toVersion(version)
         targetCompatibility = JavaVersion.toVersion(version)
     }
-}
 
-/**
- * Applies the Kotlin JVM plugin and configures Kotlin compiler settings to match the Java toolchain version.
- */
-fun Project.setupKotlin() {
-    apply(plugin = "org.jetbrains.kotlin.jvm")
-    val javaExt = extensions.getByType<JavaPluginExtension>()
-    val versionString = javaExt.toolchain.languageVersion.get().toString()
-    val jvmTarget = JvmTarget.fromTarget(versionString)
-
-    tasks.withType<KotlinCompile>().configureEach {
-        compilerOptions.jvmTarget.set(jvmTarget)
+    pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
+        extensions.getByType(KotlinJvmExtension::class.java).apply {
+            jvmToolchain(version)
+        }
     }
 }
 

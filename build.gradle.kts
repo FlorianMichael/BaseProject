@@ -6,18 +6,13 @@ plugins {
     id("com.gradle.plugin-publish") version "1.3.1"
 }
 
-group = property("maven_group") as String
-version = property("maven_version") as String
-description = property("maven_description") as String
-
-repositories {
-    mavenCentral()
-    maven("https://maven.fabricmc.net/")
-}
+group = property("project_group") as String
+version = property("project_version") as String
+description = property("project_description") as String
 
 dependencies {
+    api("org.jetbrains.kotlin:kotlin-gradle-plugin:2.1.20")
     compileOnly("net.fabricmc:fabric-loom:1.10-SNAPSHOT")
-    compileOnly("org.jetbrains.kotlin:kotlin-gradle-plugin:2.1.20")
 }
 
 java {

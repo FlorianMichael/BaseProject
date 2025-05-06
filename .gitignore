@@ -4,6 +4,7 @@
 build/
 out/
 classes/
+.kotlin/
 
 # Eclipse
 
@@ -30,5 +31,4 @@ bin/
 
 # Misc
 
-.kotlin/
 run/
