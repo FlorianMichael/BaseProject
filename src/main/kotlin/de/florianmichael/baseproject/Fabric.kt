@@ -77,13 +77,13 @@ fun mojangMapped(parchment: String? = null): MappingsConfigurer = {
  * - `supported_minecraft_versions`: Used in mod metadata if provided
  *
  * @param mappings The mappings configuration to apply (Yarn or Mojang+Parchment)
- * @param accessWidener Whether to enable access widener support
  */
-fun Project.setupFabric(mappings: MappingsConfigurer = mojangMapped(), accessWidener: Boolean = false) {
+fun Project.setupFabric(mappings: MappingsConfigurer = mojangMapped()) {
     plugins.apply("fabric-loom")
-    if (accessWidener) {
+    val accessWidenerFile = file("src/main/resources/${project.name.lowercase()}.accesswidener")
+    if (accessWidenerFile.exists()) {
         extensions.getByType(LoomGradleExtensionAPI::class.java).apply {
-            accessWidenerPath.set(file("src/main/resources/${project.name.lowercase()}.accesswidener"))
+            accessWidenerPath.set(accessWidenerFile)
         }
     }
     repositories {
