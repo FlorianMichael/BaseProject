@@ -18,6 +18,7 @@
 package de.florianmichael.baseproject
 
 import org.gradle.api.Project
+import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.authentication.http.BasicAuthentication
@@ -25,6 +26,7 @@ import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.get
 import org.gradle.plugins.signing.SigningExtension
+import kotlin.apply
 
 /**
  * Sets up Maven publishing using predefined repositories:
@@ -173,6 +175,12 @@ fun Project.configurePublishing(
     licenseUrl: String = "https://$distribution/blob/main/LICENSE",
     developerList: List<DeveloperInfo>
 ) {
+    apply(plugin = "java-library")
+    extensions.getByType(JavaPluginExtension::class.java).apply {
+        withSourcesJar()
+        withJavadocJar()
+    }
+
     apply(plugin = "maven-publish")
     extensions.getByType(PublishingExtension::class.java).apply {
         publications {
