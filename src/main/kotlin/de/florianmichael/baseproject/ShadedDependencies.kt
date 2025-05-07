@@ -23,23 +23,23 @@ import org.gradle.api.file.DuplicatesStrategy
 import org.gradle.jvm.tasks.Jar
 
 /**
- * Configures a custom `jis` configuration used to embed shaded dependencies in the JAR.
+ * Configures a custom `shadedDependencies` configuration used to embed shaded dependencies in the JAR.
  * Excludes certain metadata files and avoids duplicate entries.
  *
- * @return The created `jis` configuration.
+ * @return The created `shadedDependencies` configuration.
  */
-fun Project.configureJis(): Configuration {
-    val jis = configurations.create("jis").apply {
+fun Project.configureShadedDependencies(): Configuration {
+    val shadedDependencies = configurations.create("shadedDependencies").apply {
         isCanBeResolved = true
         isCanBeConsumed = true
         configurations.findByName("api")?.extendsFrom(this)
     }
 
     tasks.named("jar", Jar::class.java).configure {
-        dependsOn(jis)
+        dependsOn(shadedDependencies)
 
         from({
-            jis.map { zipTree(it) }
+            shadedDependencies.map { zipTree(it) }
         }) {
             exclude("META-INF/*.RSA", "META-INF/*.SF", "META-INF/*.DSA")
         }
@@ -47,5 +47,5 @@ fun Project.configureJis(): Configuration {
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     }
 
-    return jis
+    return shadedDependencies
 }
