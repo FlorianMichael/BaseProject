@@ -49,19 +49,23 @@ fun yarnMapped(version: String? = null): MappingsConfigurer = {
 /**
  * Returns a [MappingsConfigurer] that configures Mojang + Parchment layered mappings.
  *
- * Required project property:
+ * Optional project property:
  * - `parchment_version`: Version of Parchment mappings to use.
  *
  * @param parchment Optional override for the Parchment version.
  */
 fun mojangMapped(parchment: String? = null): MappingsConfigurer = {
-    val parchmentVersion = parchment ?: property("parchment_version") as String
+    val parchmentVersion: String? = parchment ?: findProperty("parchment_version") as? String
     val loom = extensions.getByType(LoomGradleExtensionAPI::class.java)
     dependencies {
-        "mappings"(loom.layered {
-            officialMojangMappings()
-            parchment("org.parchmentmc.data:parchment-$parchmentVersion@zip")
-        })
+        if (parchmentVersion == null) {
+            "mappings"(loom.officialMojangMappings())
+        } else {
+            "mappings"(loom.layered {
+                officialMojangMappings()
+                parchment("org.parchmentmc.data:parchment-$parchmentVersion@zip")
+            })
+        }
     }
 }
 
@@ -88,7 +92,7 @@ fun Project.setupFabric(mappings: MappingsConfigurer = mojangMapped()) {
     }
     repositories {
         maven("https://maven.fabricmc.net/")
-        maven("https://maven.parchmentmc.org")
+        maven("https://maven.parchmentmc.org/")
     }
     dependencies {
         "minecraft"("com.mojang:minecraft:${property("minecraft_version")}")
