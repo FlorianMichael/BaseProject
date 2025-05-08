@@ -27,7 +27,6 @@ import org.gradle.external.javadoc.StandardJavadocDocletOptions
 import org.gradle.jvm.tasks.Jar
 import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmExtension
 
 /**
@@ -36,6 +35,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJvmExtension
  * - Java toolchain setup
  * - License file renaming to avoid name conflicts
  * - Compiler encoding configuration
+ * - Hiding build warnings
  *
  * Supports the following Gradle properties:
  * - `project_group`: The group ID of the project
