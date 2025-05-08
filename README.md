@@ -133,8 +133,9 @@ ossrhPassword=<your account password> # This is an access token nowadays
 #### **`gradle.properties` in the project folder:**
 
 ```properties
-publishing_distribution=github.com/FlorianMichael/ExampleProject
-publishing_license=Apache-2.0
+publishing_gh_account=FlorianMichael
+publishing_dev_name=<full name>
+publishing_dev_mail=<contact mail>
 ```
 
 You can also add your own repository server. The `configurePublishing` function will always sign the publications if the signing properties are present.

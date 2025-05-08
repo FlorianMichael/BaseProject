@@ -36,13 +36,11 @@ import org.gradle.plugins.signing.SigningExtension
  *
  * Required project property:
  * - `publishing_distribution`: GitHub/GitLab URL used for license and SCM metadata
- *
- * @param developerInfo List of developers to include in the POM metadata.
  */
-fun Project.setupPublishing(developerInfo: List<DeveloperInfo>) {
+fun Project.setupPublishing() {
     configureLenni0451Repository()
     configureOssrhRepository()
-    configureGHPublishing(developerInfo = developerInfo)
+    configureGHPublishing()
 }
 
 /**
@@ -105,10 +103,28 @@ fun Project.configureOssrhRepository() {
 }
 
 data class DeveloperInfo(
-    val id: String,
-    val name: String,
-    val email: String
+    val id: String?,
+    val name: String?,
+    val email: String?
 )
+
+fun Project.getDeveloperInfoFromProperties(devId: String? = null): List<DeveloperInfo> {
+    val id = findProperty("publishing_dev_id") as? String?: devId
+    val name = findProperty("publishing_dev_name") as String?
+    val mail = findProperty("publishing_dev_mail") as String?
+
+    // Only return a DeveloperInfo if at least one property is set
+    return if (id != null || name != null || mail != null) {
+        listOf(
+            DeveloperInfo(
+                id = id,
+                name = name,
+                email = mail
+            )
+        )
+    } else emptyList()
+}
+
 
 /**
  * Convenience wrapper for [configurePublishing] that targets GitHub Maven repositories.
@@ -126,13 +142,13 @@ data class DeveloperInfo(
  * @param account GitHub username or organization (e.g., "YourName").
  * @param repository GitHub repository name (e.g., "YourRepo").
  * @param license The license name to use (default from `publishing_license` project property or "Apache-2.0").
- * @param developerInfo List of developers to include in the POM metadata.
+ * @param developerInfo List of developers to include in the POM metadata, defaulting to the project properties.
  */
 fun Project.configureGHPublishing(
     account: String = property("publishing_gh_account") as String,
     repository: String = findProperty("publishing_repository") as String? ?: project.name,
     license: String = findProperty("publishing_license") as String? ?: "Apache-2.0",
-    developerInfo: List<DeveloperInfo>
+    developerInfo: List<DeveloperInfo> = getDeveloperInfoFromProperties(account)
 ) {
     val distribution = "github.com/$account/$repository"
     configurePublishing(distribution, license, "https://$distribution/blob/main/LICENSE", developerInfo)
@@ -154,13 +170,13 @@ fun Project.configureGHPublishing(
  * @param distribution The distribution URL for the project (e.g., GitHub/GitLab URL).
  * @param licenseName The name of the license to use in the POM metadata (defaults from `publishing_license` property or "Apache-2.0").
  * @param licenseUrl The URL to the license file in the repository (defaults from `publishing_license_url` property or "https://www.apache.org/licenses/LICENSE-2.0").
- * @param developerInfo List of developers to include in the POM metadata.
+ * @param developerInfo List of developers to include in the POM metadata, defaulting to the project properties.
  */
 fun Project.configurePublishing(
     distribution: String = property("publishing_distribution") as String,
     licenseName: String = findProperty("publishing_license") as String? ?: "Apache-2.0",
     licenseUrl: String = findProperty("publishing_license_url") as String? ?: "https://www.apache.org/licenses/LICENSE-2.0",
-    developerInfo: List<DeveloperInfo>
+    developerInfo: List<DeveloperInfo> = getDeveloperInfoFromProperties()
 ) {
     apply(plugin = "java-library")
     extensions.getByType(JavaPluginExtension::class.java).apply {
