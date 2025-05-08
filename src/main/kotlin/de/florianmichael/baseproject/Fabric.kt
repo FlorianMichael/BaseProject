@@ -108,11 +108,11 @@ fun Project.setupFabric(mappings: MappingsConfigurer = mojangMapped()) {
         val projectVersion = project.version
         val projectDescription = project.description
         val mcVersion = if (!project.hasProperty("supported_minecraft_versions")) {
-            property("minecraft_version") as String
+            project.property("minecraft_version") as String
         } else {
-            val supportedVersions = property("supported_minecraft_versions") as String
+            val supportedVersions = project.property("supported_minecraft_versions") as String
             supportedVersions.ifEmpty {
-                property("minecraft_version") as String
+                project.property("minecraft_version") as String
             }
         }
         filesMatching("fabric.mod.json") {
