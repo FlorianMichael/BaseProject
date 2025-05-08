@@ -116,6 +116,13 @@ data class DeveloperInfo(
  * Constructs the `distribution` from the given GitHub account and repository name,
  * and generates a license URL assuming it resides at `main/LICENSE`.
  *
+ * Required project property:
+ * - `publishing_gh_account`: GitHub username or organization (e.g., "YourName").
+ *
+ * Optional project properties:
+ * - `publishing_repository`: GitHub repository name (e.g., "YourRepo"). Defaults to the project name.
+ * - `publishing_license`: License name to use (default from `publishing_license` project property or "Apache-2.0").
+ *
  * @param account GitHub username or organization (e.g., "YourName").
  * @param repository GitHub repository name (e.g., "YourRepo").
  * @param license The license name to use (default from `publishing_license` project property or "Apache-2.0").
@@ -123,7 +130,7 @@ data class DeveloperInfo(
  */
 fun Project.configureGHPublishing(
     account: String = property("publishing_gh_account") as String,
-    repository: String = property("publishing_repository") as String,
+    repository: String = findProperty("publishing_repository") as String? ?: project.name,
     license: String = findProperty("publishing_license") as String? ?: "Apache-2.0",
     developerInfo: List<DeveloperInfo>
 ) {
@@ -139,7 +146,7 @@ fun Project.configureGHPublishing(
  * Required project property:
  * - `publishing_distribution`: GitHub/GitLab org/repo (e.g. `github.com/YourName/RepoName`)
  *
- * Optional project property:
+ * Optional project properties:
  * - `publishing_license`: License name to use in the POM (defaults to Apache-2.0)
  * - `publishing_license_url`: URL to license file in the repository (defaults to "https://www.apache.org/licenses/LICENSE-2.0")
  *
