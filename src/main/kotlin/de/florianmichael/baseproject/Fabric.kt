@@ -107,7 +107,14 @@ fun Project.setupFabric(mappings: MappingsConfigurer = mojangMapped()) {
     tasks.named<ProcessResources>("processResources").configure {
         val projectVersion = project.version
         val projectDescription = project.description
-        val mcVersion = mcVersion()
+        val mcVersion = if (!project.hasProperty("supported_minecraft_versions")) {
+            property("minecraft_version") as String
+        } else {
+            val supportedVersions = property("supported_minecraft_versions") as String
+            supportedVersions.ifEmpty {
+                property("minecraft_version") as String
+            }
+        }
         filesMatching("fabric.mod.json") {
             expand(
                 "version" to projectVersion,
@@ -199,35 +206,22 @@ fun Project.includeTransitiveJijDependencies() {
 }
 
 /**
- * Resolves the target Minecraft version from `supported_minecraft_versions`, falling back to `minecraft_version` if unset.
- *
- * Required project property:
- * - `minecraft_version`
- *
- * Optional project property:
- * - `supported_minecraft_versions`
- *
- * @return The Minecraft version string to use for metadata.
- */
-fun Project.mcVersion(): String {
-    if (!project.hasProperty("supported_minecraft_versions")) {
-        return property("minecraft_version") as String
-    }
-
-    val supportedVersions = property("supported_minecraft_versions") as String
-    return supportedVersions.ifEmpty {
-        property("minecraft_version") as String
-    }
-}
-
-/**
  * Adds core Fabric API modules to the project and directly shades them into the jar using the `jij` configuration.
  *
- * See [coreFabricApiModules] for details on the modules added.
+ * See [configureCoreFabricApiModules] for details on the modules added.
  */
 fun Project.includeCoreFabricApiModules() {
     configureModJij()
-    coreFabricApiModules("modJij")
+    configureCoreFabricApiModules("modJij")
+}
+
+/**
+ * Adds core Fabric API modules to the project.
+ *
+ * See [configureCoreFabricApiModules] for details on the modules added.
+ */
+fun Project.loadCoreFabricApiModules() {
+    configureCoreFabricApiModules("modImplementation")
 }
 
 /**
@@ -244,8 +238,8 @@ fun Project.includeCoreFabricApiModules() {
  * @param configuration The configuration to add the modules to. Defaults to `modImplementation`.
  * @param version The version of the Fabric API to use. Defaults to the value of `fabric_api_version` property.
  */
-fun Project.coreFabricApiModules(
-    configuration: String = "modImplementation",
+fun Project.configureCoreFabricApiModules(
+    configuration: String,
     version: String = property("fabric_api_version") as String
 ) {
     pluginManager.withPlugin("fabric-loom") {
