@@ -75,9 +75,9 @@ fun mojangMapped(parchment: String? = null): MappingsConfigurer = {
  * Required project properties:
  * - `minecraft_version`: Minecraft version to target
  * - `fabric_loader_version`: Fabric loader version
- * - `fabric_kotlin_version`: Fabric Kotlin language module version (used if Kotlin plugin is applied)
  *
  * Optional project properties:
+ * - `fabric_kotlin_version`: Fabric Kotlin language module version (used if Kotlin plugin is applied)
  * - `supported_minecraft_versions`: Used in mod metadata if provided
  *
  * @param mappings The mappings configuration to apply (Yarn or Mojang+Parchment)
@@ -178,7 +178,7 @@ fun Project.includeFabricSubmodule(name: String) {
 /**
  * Add support to the jar in jar system from Fabric to support transitive dependencies by manually proxying them into the jar.
  */
-fun Project.processJijDependencies() {
+fun Project.includeTransitiveJijDependencies() {
     afterEvaluate {
         val jijConfig = configurations.findByName("jij") ?: return@afterEvaluate
 

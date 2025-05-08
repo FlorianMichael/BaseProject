@@ -47,9 +47,9 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJvmExtension
 fun Project.setupProject() {
     configureProjectDetails()
     setupJava()
-    renameLicenseFile()
     configureEncoding()
     hideBuildWarnings()
+    renameLicenseFile()
 }
 
 /**
@@ -71,30 +71,6 @@ fun Project.configureProjectDetails() {
     apply(plugin = "base")
     extensions.getByType(BasePluginExtension::class.java).apply {
         findProperty("project_name")?.let { archivesName.set(it as String) }
-    }
-}
-
-/**
- * Ensures UTF-8 encoding for all Java source compilation tasks.
- */
-fun Project.configureEncoding() {
-    tasks.withType(JavaCompile::class.java).configureEach {
-        options.encoding = "UTF-8"
-    }
-    tasks.withType(Javadoc::class.java).configureEach {
-        options.encoding = "UTF-8"
-    }
-}
-
-/**
- * Hides build warnings by configuring the Javadoc and Java compile tasks.
- */
-fun Project.hideBuildWarnings() {
-    tasks.withType(JavaCompile::class.java).configureEach {
-        options.compilerArgs.addAll(listOf("-nowarn", "-Xlint:-unchecked", "-Xlint:-deprecation"))
-    }
-    tasks.withType(Javadoc::class.java).configureEach {
-        (options as StandardJavadocDocletOptions).addStringOption("Xdoclint:none", "-quiet")
     }
 }
 
@@ -124,6 +100,30 @@ fun Project.setupJava(version: Int = project.property("project_jvm_version").toS
 }
 
 /**
+ * Ensures UTF-8 encoding for all Java source compilation tasks.
+ */
+fun Project.configureEncoding() {
+    tasks.withType(JavaCompile::class.java).configureEach {
+        options.encoding = "UTF-8"
+    }
+    tasks.withType(Javadoc::class.java).configureEach {
+        options.encoding = "UTF-8"
+    }
+}
+
+/**
+ * Hides build warnings by configuring the Javadoc and Java compile tasks.
+ */
+fun Project.hideBuildWarnings() {
+    tasks.withType(JavaCompile::class.java).configureEach {
+        options.compilerArgs.addAll(listOf("-nowarn", "-Xlint:-unchecked", "-Xlint:-deprecation"))
+    }
+    tasks.withType(Javadoc::class.java).configureEach {
+        (options as StandardJavadocDocletOptions).addStringOption("Xdoclint:none", "-quiet")
+    }
+}
+
+/**
  * Renames the `LICENSE` file to `LICENSE_<project_name>` in the final JAR
  * to avoid naming conflicts in multi-module projects.
  */
@@ -131,7 +131,6 @@ fun Project.renameLicenseFile() {
     tasks.named("jar", Jar::class.java).configure {
         val projectName = project.name
 
-        // Rename the project's license file to LICENSE_<project_name> to avoid conflicts
         from("LICENSE") {
             rename { "LICENSE_$projectName" }
         }
