@@ -26,43 +26,23 @@ import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.get
 import org.gradle.plugins.signing.SigningExtension
-import kotlin.apply
 
 /**
  * Sets up Maven publishing using predefined repositories:
  * - Lenni0451's Reposilite
  * - OSSRH (Sonatype)
  *
- * Calls [configureLenni0451Repository], [configureOssrhRepository], and [configurePublishing].
+ * Calls [configureLenni0451Repository], [configureOssrhRepository], and [configureGHPublishing].
  *
  * Required project property:
  * - `publishing_distribution`: GitHub/GitLab URL used for license and SCM metadata
  *
- * @param developers List of developers to include in the POM metadata.
+ * @param developerInfo List of developers to include in the POM metadata.
  */
-fun Project.setupPublishing(developers: List<DeveloperInfo>) {
+fun Project.setupPublishing(developerInfo: List<DeveloperInfo>) {
     configureLenni0451Repository()
     configureOssrhRepository()
-    configurePublishing(developerList = developers)
-}
-
-/**
- * Sets up Maven publishing using the ViaVersion repository.
- *
- * Calls [configureViaRepository] to register the `https://repo.viaversion.com/` Maven repo,
- * and [configurePublishing] to configure the Maven publishing plugin with POM metadata and signing.
- *
- * Required project property:
- * - `publishing_distribution`: Repository URL used in generated POM (e.g., GitHub/GitLab URL)
- *
- * Authentication:
- * - Requires basic authentication for the ViaVersion repository (set via Gradle credentials).
- *
- * @param developers List of developers to include in the POM metadata.
- */
-fun Project.setupViaPublishing(developers: List<DeveloperInfo>) {
-    configureViaRepository()
-    configurePublishing(developerList = developers)
+    configureGHPublishing(developerInfo = developerInfo)
 }
 
 /**
@@ -124,32 +104,32 @@ fun Project.configureOssrhRepository() {
     }
 }
 
-/**
- * Configures a Maven repository for ViaVersion's repo.
- *
- * URL: `https://repo.viaversion.com/`
- *
- * Requires basic authentication.
- */
-fun Project.configureViaRepository() {
-    repositories.maven {
-        name = "Via"
-        url = uri("https://repo.viaversion.com/")
-        credentials {
-            username = findProperty("ViaUsername") as String?
-            password = findProperty("ViaPassword") as String?
-        }
-        authentication {
-            create<BasicAuthentication>("basic")
-        }
-    }
-}
-
 data class DeveloperInfo(
     val id: String,
     val name: String,
     val email: String
 )
+
+/**
+ * Convenience wrapper for [configurePublishing] that targets GitHub Maven repositories.
+ *
+ * Constructs the `distribution` from the given GitHub account and repository name,
+ * and generates a license URL assuming it resides at `main/LICENSE`.
+ *
+ * @param account GitHub username or organization (e.g., "YourName").
+ * @param repository GitHub repository name (e.g., "YourRepo").
+ * @param license The license name to use (default from `publishing_license` project property or "Apache-2.0").
+ * @param developerInfo List of developers to include in the POM metadata.
+ */
+fun Project.configureGHPublishing(
+    account: String = property("publishing_gh_account") as String,
+    repository: String = property("publishing_repository") as String,
+    license: String = findProperty("publishing_license") as String? ?: "Apache-2.0",
+    developerInfo: List<DeveloperInfo>
+) {
+    val distribution = "github.com/$account/$repository"
+    configurePublishing(distribution, license, "https://$distribution/blob/main/LICENSE", developerInfo)
+}
 
 /**
  * Configures Maven publishing and signing using the `maven-publish` and `signing` plugins.
@@ -159,21 +139,21 @@ data class DeveloperInfo(
  * Required project property:
  * - `publishing_distribution`: GitHub/GitLab org/repo (e.g. `github.com/YourName/RepoName`)
  *
- * Optional arguments:
- * - `license`: License name to use in the POM (defaults to Apache-2.0)
- * - `licenseUrl`: URL to license file in the repository
+ * Optional project property:
+ * - `publishing_license`: License name to use in the POM (defaults to Apache-2.0)
+ * - `publishing_license_url`: URL to license file in the repository (defaults to "https://www.apache.org/licenses/LICENSE-2.0")
  *
  * Also applies GPG signing (signing is optional and controlled by presence of keys).
  * @param distribution The distribution URL for the project (e.g., GitHub/GitLab URL).
- * @param license The license name to use in the POM.
- * @param licenseUrl The URL to the license file in the repository (default: GitHub URL).
- * @param developerList List of developers to include in the POM metadata.
+ * @param licenseName The name of the license to use in the POM metadata (defaults from `publishing_license` property or "Apache-2.0").
+ * @param licenseUrl The URL to the license file in the repository (defaults from `publishing_license_url` property or "https://www.apache.org/licenses/LICENSE-2.0").
+ * @param developerInfo List of developers to include in the POM metadata.
  */
 fun Project.configurePublishing(
     distribution: String = property("publishing_distribution") as String,
-    license: String = property("publishing_license") as String,
-    licenseUrl: String = "https://$distribution/blob/main/LICENSE",
-    developerList: List<DeveloperInfo>
+    licenseName: String = findProperty("publishing_license") as String? ?: "Apache-2.0",
+    licenseUrl: String = findProperty("publishing_license_url") as String? ?: "https://www.apache.org/licenses/LICENSE-2.0",
+    developerInfo: List<DeveloperInfo>
 ) {
     apply(plugin = "java-library")
     extensions.getByType(JavaPluginExtension::class.java).apply {
@@ -197,12 +177,12 @@ fun Project.configurePublishing(
                     url.set("https://$distribution")
                     licenses {
                         license {
-                            name.set(license)
+                            name.set(licenseName)
                             url.set(licenseUrl)
                         }
                     }
                     developers {
-                        developerList.forEach { dev ->
+                        developerInfo.forEach { dev ->
                             developer {
                                 id.set(dev.id)
                                 name.set(dev.name)
