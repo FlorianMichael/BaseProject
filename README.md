@@ -1,5 +1,5 @@
 # BaseProject
-Gradle convention plugin with jar signing, publishing to maven central and GitHub workflows.
+A Gradle convention plugin for streamlined project setup and publishing.
 
 ## Contact
 If you encounter any issues, please report them on the [issue tracker](https://github.com/FlorianMichael/BaseProject/issues).
