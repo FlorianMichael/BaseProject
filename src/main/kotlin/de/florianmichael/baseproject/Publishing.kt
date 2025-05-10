@@ -44,6 +44,20 @@ fun Project.setupPublishing() {
 }
 
 /**
+ * Sets up Maven publishing using predefined repositories:
+ * - ViaVersion's Maven repository
+ *
+ * Calls [configureViaRepository] and [configureGHPublishing].
+ *
+ * Required project property:
+ * - `publishing_distribution`: GitHub/GitLab URL used for license and SCM metadata
+ */
+fun Project.setupViaPublishing() {
+    configureViaRepository()
+    configureGHPublishing()
+}
+
+/**
  * Configures publishing to Lenni0451's Maven Reposilite repository.
  *
  * Chooses `snapshots` or `releases` sub-repo based on project version suffix.
@@ -95,6 +109,27 @@ fun Project.configureOssrhRepository() {
         credentials {
             username = findProperty("ossrhUsername") as String?
             password = findProperty("ossrhPassword") as String?
+        }
+        authentication {
+            create<BasicAuthentication>("basic")
+        }
+    }
+}
+
+/**
+ * Configures a Maven repository for ViaVersion's repo.
+ *
+ * URL: `https://repo.viaversion.com/`
+ *
+ * Requires basic authentication.
+ */
+fun Project.configureViaRepository() {
+    repositories.maven {
+        name = "Via"
+        url = uri("https://repo.viaversion.com/")
+        credentials {
+            username = findProperty("ViaUsername") as String?
+            password = findProperty("ViaPassword") as String?
         }
         authentication {
             create<BasicAuthentication>("basic")

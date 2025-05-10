@@ -211,48 +211,46 @@ fun Project.includeTransitiveJijDependencies() {
 /**
  * Adds core Fabric API modules to the project and directly shades them into the jar using the `jij` configuration.
  *
- * See [configureCoreFabricApiModules] for details on the modules added.
+ * See [configureFabricApiModules] for details on the modules added.
+ *
+ * @param modules The Fabric API modules to include.
  */
-fun Project.includeCoreFabricApiModules() {
+fun Project.includeFabricApiModules(vararg modules: String) {
     configureModJij()
-    configureCoreFabricApiModules("modJij")
+    configureFabricApiModules("modJij", *modules)
 }
 
 /**
  * Adds core Fabric API modules to the project.
  *
- * See [configureCoreFabricApiModules] for details on the modules added.
+ * See [configureFabricApiModules] for details on the modules added.
+ *
+ * @param modules The Fabric API modules to include.
  */
-fun Project.loadCoreFabricApiModules() {
-    configureCoreFabricApiModules("modImplementation")
+fun Project.loadFabricApiModules(vararg modules: String) {
+    configureFabricApiModules("modImplementation", *modules)
 }
 
 /**
- * Adds core Fabric API modules to the project.
- *
- * Modules added:
- * - `fabric-api-base`
- * - `fabric-resource-loader-v0`
- * - `fabric-screen-api-v1`
- * - `fabric-key-binding-api-v1`
- * - `fabric-lifecycle-events-v1`
+ * Adds Fabric API modules to the project.
  *
  * Requires that the `fabric-loom` plugin is applied.
  * @param configuration The configuration to add the modules to. Defaults to `modImplementation`.
+ * @param modules The Fabric API modules to include.
  * @param version The version of the Fabric API to use. Defaults to the value of `fabric_api_version` property.
  */
-fun Project.configureCoreFabricApiModules(
+fun Project.configureFabricApiModules(
     configuration: String,
+    vararg modules: String,
     version: String = property("fabric_api_version") as String
 ) {
     pluginManager.withPlugin("fabric-loom") {
         val fabricApi = extensions.getByType(FabricApiExtension::class.java)
         dependencies {
             configuration(fabricApi.module("fabric-api-base", version))
-            configuration(fabricApi.module("fabric-resource-loader-v0", version))
-            configuration(fabricApi.module("fabric-screen-api-v1", version))
-            configuration(fabricApi.module("fabric-key-binding-api-v1", version))
-            configuration(fabricApi.module("fabric-lifecycle-events-v1", version))
+            modules.forEach {
+                configuration(fabricApi.module(it, version))
+            }
         }
     }
 }
