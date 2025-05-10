@@ -24,13 +24,17 @@ import org.gradle.kotlin.dsl.withType
 /**
  * Configures all test tasks to use JUnit Platform and enable logging for passed, skipped, and failed tests.
  * Also sets parallel forks based on available processor cores.
+ *
+ * @param condition If true, enables the test tasks. Defaults to true.
  */
-fun Project.configureTestTasks() {
+fun Project.configureTestTasks(condition: Boolean = true) {
     tasks.withType<Test>().configureEach {
+        enabled = condition
         useJUnitPlatform()
         testLogging {
             events("passed", "skipped", "failed")
         }
+        workingDir = file("run")
         maxParallelForks = Runtime.getRuntime().availableProcessors()
     }
 }
