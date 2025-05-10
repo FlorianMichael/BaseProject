@@ -105,6 +105,7 @@ fun Project.setupFabric(mappings: MappingsConfigurer = mojangMapped()) {
     }
     mappings()
     tasks.named<ProcessResources>("processResources").configure {
+        val projectName = project.name
         val projectVersion = project.version
         val projectDescription = project.description
         val mcVersion = if (!project.hasProperty("supported_minecraft_versions")) {
@@ -115,9 +116,11 @@ fun Project.setupFabric(mappings: MappingsConfigurer = mojangMapped()) {
                 project.property("minecraft_version") as String
             }
         }
+        val latestCommitHash = latestCommitHash()
         filesMatching("fabric.mod.json") {
             expand(
                 "version" to projectVersion,
+                "implVersion" to "git-${projectName}-${projectVersion}:${latestCommitHash}",
                 "description" to projectDescription,
                 "mcVersion" to mcVersion,
             )
