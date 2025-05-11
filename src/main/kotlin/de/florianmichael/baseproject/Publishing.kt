@@ -54,7 +54,7 @@ fun Project.setupPublishing() {
  */
 fun Project.setupViaPublishing() {
     configureViaRepository()
-    configureGHPublishing()
+    configureGHPublishing(account = "ViaVersion", license = "GPL-3.0")
 }
 
 /**
