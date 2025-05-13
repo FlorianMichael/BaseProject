@@ -11,7 +11,7 @@ version = property("project_version") as String
 description = property("project_description") as String
 
 dependencies {
-    api("org.jetbrains.kotlin:kotlin-gradle-plugin:2.1.20")
+    api("org.jetbrains.kotlin:kotlin-gradle-plugin:2.1.21")
     compileOnly("net.fabricmc:fabric-loom:1.10-SNAPSHOT")
 }
 
