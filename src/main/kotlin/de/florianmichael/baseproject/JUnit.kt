@@ -34,7 +34,9 @@ fun Project.configureTestTasks(condition: Boolean = true) {
         testLogging {
             events("passed", "skipped", "failed")
         }
-        workingDir = file("run")
+        if (file("run").exists()) {
+            workingDir = file("run")
+        }
         maxParallelForks = Runtime.getRuntime().availableProcessors()
     }
 }
