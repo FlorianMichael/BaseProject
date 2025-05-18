@@ -69,6 +69,7 @@ fun Project.setupViaPublishing() {
  * Requires authentication via basic username/password (credentials block).
  */
 fun Project.configureLenni0451Repository() {
+    apply(plugin = "maven-publish")
     extensions.getByType(PublishingExtension::class.java).apply {
         repositories.maven {
             name = "reposilite"
@@ -99,6 +100,7 @@ fun Project.configureLenni0451Repository() {
  * Requires authentication (OSSRH credentials via Gradle).
  */
 fun Project.configureOssrhRepository() {
+    apply(plugin = "maven-publish")
     extensions.getByType(PublishingExtension::class.java).apply {
         repositories.maven {
             name = "ossrh"
@@ -128,6 +130,7 @@ fun Project.configureOssrhRepository() {
  * Requires basic authentication.
  */
 fun Project.configureViaRepository() {
+    apply(plugin = "maven-publish")
     extensions.getByType(PublishingExtension::class.java).apply {
         repositories.maven {
             name = "Via"
