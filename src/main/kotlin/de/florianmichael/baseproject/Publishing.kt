@@ -69,18 +69,20 @@ fun Project.setupViaPublishing() {
  * Requires authentication via basic username/password (credentials block).
  */
 fun Project.configureLenni0451Repository() {
-    repositories.maven {
-        name = "reposilite"
-        url = uri(
-            "https://maven.lenni0451.net/" +
-                if (project.version.toString().endsWith("SNAPSHOT")) "snapshots" else "releases"
-        )
-        credentials {
-            username = findProperty("reposiliteUsername") as String?
-            password = findProperty("reposilitePassword") as String?
-        }
-        authentication {
-            create<BasicAuthentication>("basic")
+    extensions.getByType(PublishingExtension::class.java).apply {
+        repositories.maven {
+            name = "reposilite"
+            url = uri(
+                "https://maven.lenni0451.net/" +
+                    if (project.version.toString().endsWith("SNAPSHOT")) "snapshots" else "releases"
+            )
+            credentials {
+                username = findProperty("reposiliteUsername") as String?
+                password = findProperty("reposilitePassword") as String?
+            }
+            authentication {
+                create<BasicAuthentication>("basic")
+            }
         }
     }
 }
@@ -97,21 +99,23 @@ fun Project.configureLenni0451Repository() {
  * Requires authentication (OSSRH credentials via Gradle).
  */
 fun Project.configureOssrhRepository() {
-    repositories.maven {
-        name = "ossrh"
-        val releasesUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-        val snapshotsUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
-        url = uri(
-            if (project.version.toString().endsWith("SNAPSHOT")) snapshotsUrl
-            else releasesUrl
-        )
+    extensions.getByType(PublishingExtension::class.java).apply {
+        repositories.maven {
+            name = "ossrh"
+            val releasesUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+            val snapshotsUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+            url = uri(
+                if (project.version.toString().endsWith("SNAPSHOT")) snapshotsUrl
+                else releasesUrl
+            )
 
-        credentials {
-            username = findProperty("ossrhUsername") as String?
-            password = findProperty("ossrhPassword") as String?
-        }
-        authentication {
-            create<BasicAuthentication>("basic")
+            credentials {
+                username = findProperty("ossrhUsername") as String?
+                password = findProperty("ossrhPassword") as String?
+            }
+            authentication {
+                create<BasicAuthentication>("basic")
+            }
         }
     }
 }
@@ -124,15 +128,17 @@ fun Project.configureOssrhRepository() {
  * Requires basic authentication.
  */
 fun Project.configureViaRepository() {
-    repositories.maven {
-        name = "Via"
-        url = uri("https://repo.viaversion.com/")
-        credentials {
-            username = findProperty("ViaUsername") as String?
-            password = findProperty("ViaPassword") as String?
-        }
-        authentication {
-            create<BasicAuthentication>("basic")
+    extensions.getByType(PublishingExtension::class.java).apply {
+        repositories.maven {
+            name = "Via"
+            url = uri("https://repo.viaversion.com/")
+            credentials {
+                username = findProperty("ViaUsername") as String?
+                password = findProperty("ViaPassword") as String?
+            }
+            authentication {
+                create<BasicAuthentication>("basic")
+            }
         }
     }
 }
