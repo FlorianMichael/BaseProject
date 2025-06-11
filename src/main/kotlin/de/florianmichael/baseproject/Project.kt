@@ -27,6 +27,7 @@ import org.gradle.external.javadoc.StandardJavadocDocletOptions
 import org.gradle.jvm.tasks.Jar
 import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.kotlin.dsl.apply
+import org.gradle.kotlin.dsl.repositories
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmExtension
 
 /**
@@ -46,10 +47,20 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJvmExtension
  */
 fun Project.setupProject() {
     configureProjectDetails()
+    setupRepositories()
     setupJava()
     configureEncoding()
     hideBuildWarnings()
     renameLicenseFile()
+}
+
+/**
+ * Sets up the default repositories for the project.
+ */
+fun Project.setupRepositories() {
+    repositories {
+        mavenCentral()
+    }
 }
 
 /**
