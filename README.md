@@ -187,45 +187,6 @@ fabric_loader_version=0.16.14
 
 ---
 
-## JDA Setup
-### Kotlin DSL Example:
-Add the following to your **`build.gradle.kts`** (below the `setupProject` call):
-
-```kotlin
-// JDA setup without extensions
-setupJDA()
-
-// JDA setup with extensions (e.g. Lavaplayer, UDP Queue):
-// setupJDA(JDAExtension.LAVAPAYER, JDAExtension.UDP_QUEUE)
-```
-
-Set the required versions in **`gradle.properties`**:
-
-```properties
-jda_version=5.6.1
-```
-
----
-
-### Groovy DSL Example:
-Add the following to your **`build.gradle`** (below the `setupProject` call):
-
-```groovy
-// JDA setup without extensions
-setupJDA()
-
-// JDA setup with extensions (e.g. Lavaplayer, UDP Queue):
-// setupJDA(JDAExtension.LAVAPAYER, JDAExtension.UDP_QUEUE)
-```
-
-Set the required versions in **`gradle.properties`**:
-
-```properties
-jda_version=5.6.1
-```
-
----
-
 ## Moving On
 You can use additional utilities like automatic dependency shading:
 
