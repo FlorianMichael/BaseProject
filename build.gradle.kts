@@ -10,8 +10,15 @@ group = property("project_group") as String
 version = property("project_version") as String
 description = property("project_description") as String
 
+repositories {
+    mavenCentral()
+    gradlePluginPortal()
+    maven("https://maven.fabricmc.net/")
+}
+
 dependencies {
     api("org.jetbrains.kotlin:kotlin-gradle-plugin:2.1.21")
+    api("io.github.gradle-nexus.publish-plugin:io.github.gradle-nexus.publish-plugin.gradle.plugin:2.0.0")
     compileOnly("net.fabricmc:fabric-loom:1.10-SNAPSHOT")
 }
 

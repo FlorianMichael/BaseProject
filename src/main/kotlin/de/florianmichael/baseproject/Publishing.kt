@@ -17,6 +17,7 @@
 
 package de.florianmichael.baseproject
 
+import io.github.gradlenexus.publishplugin.NexusPublishExtension
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.publish.PublishingExtension
@@ -26,6 +27,7 @@ import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.get
 import org.gradle.plugins.signing.SigningExtension
+import java.net.URI
 
 /**
  * Sets up Maven publishing using predefined repositories:
@@ -94,30 +96,19 @@ fun Project.configureLenni0451Repository() {
  * Automatically selects the snapshot or release URL based on the project version.
  *
  * URLs:
- * - Releases: `https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/`
- * - Snapshots: `https://s01.oss.sonatype.org/content/repositories/snapshots/`
+ * - Releases: `https://ossrh-staging-api.central.sonatype.com/service/local/`
+ * - Snapshots: `https://central.sonatype.com/repository/maven-snapshots/`
  *
  * Requires authentication (OSSRH credentials via Gradle).
  */
 fun Project.configureOssrhRepository() {
-    apply(plugin = "maven-publish")
-    extensions.getByType(PublishingExtension::class.java).apply {
-        repositories.maven {
-            name = "ossrh"
-            val releasesUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-            val snapshotsUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
-            url = uri(
-                if (project.version.toString().endsWith("SNAPSHOT")) snapshotsUrl
-                else releasesUrl
-            )
-
-            credentials {
-                username = findProperty("ossrhUsername") as String?
-                password = findProperty("ossrhPassword") as String?
-            }
-            authentication {
-                create<BasicAuthentication>("basic")
-            }
+    apply(plugin = "io.github.gradle-nexus.publish-plugin")
+    extensions.getByType(NexusPublishExtension::class.java).apply {
+        repositories.sonatype {
+            nexusUrl.set(URI.create("https://ossrh-staging-api.central.sonatype.com/service/local/"))
+            snapshotRepositoryUrl.set(URI.create("https://central.sonatype.com/repository/maven-snapshots/"))
+            username.set(findProperty("ossrhUsername") as String?)
+            password.set(findProperty("ossrhPassword") as String?)
         }
     }
 }
