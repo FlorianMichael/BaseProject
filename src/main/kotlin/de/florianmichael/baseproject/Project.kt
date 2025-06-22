@@ -135,6 +135,15 @@ fun Project.hideBuildWarnings() {
 }
 
 /**
+ * Increases the maximum number of visible build errors to 5000
+ */
+fun Project.increaseVisibleBuildErrors() {
+    tasks.withType(JavaCompile::class.java).configureEach {
+        options.compilerArgs.addAll(listOf("-Xmaxerrs", "5000"))
+    }
+}
+
+/**
  * Renames the `LICENSE` file to `LICENSE_<project_name>` in the final JAR
  * to avoid naming conflicts in multi-module projects.
  */
