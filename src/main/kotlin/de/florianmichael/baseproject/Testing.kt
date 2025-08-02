@@ -18,7 +18,9 @@
 package de.florianmichael.baseproject
 
 import org.gradle.api.Project
+import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.testing.Test
+import org.gradle.kotlin.dsl.the
 import org.gradle.kotlin.dsl.withType
 
 /**
@@ -39,4 +41,18 @@ fun Project.configureTestTasks(condition: Boolean = true) {
         }
         maxParallelForks = Runtime.getRuntime().availableProcessors()
     }
+}
+
+/**
+ * Configures an example source set that depends on the main source set.
+ * This is useful for projects that have example code or tests that should run with the main codebase.
+ */
+fun Project.configureExampleSourceSet() {
+    val sourceSets = the<SourceSetContainer>()
+
+    val main = sourceSets.getByName("main")
+    val example = sourceSets.create("example")
+
+    example.compileClasspath += main.output + main.compileClasspath
+    example.runtimeClasspath += example.compileClasspath
 }
