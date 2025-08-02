@@ -23,7 +23,6 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.expand
 import org.gradle.kotlin.dsl.maven
 import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.repositories
@@ -118,12 +117,12 @@ fun Project.setupFabric(mappings: MappingsConfigurer = mojangMapped()) {
         }
         val latestCommitHash = latestCommitHash()
         filesMatching("fabric.mod.json") {
-            expand(
+            expand(mapOf(
                 "version" to projectVersion,
                 "implVersion" to "git-${projectName}-${projectVersion}:${latestCommitHash}",
                 "description" to projectDescription,
-                "mcVersion" to mcVersion,
-            )
+                "mcVersion" to mcVersion
+            ))
         }
     }
 
