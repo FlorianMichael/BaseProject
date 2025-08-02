@@ -49,7 +49,7 @@ fun Project.configureShadedDependencies(): Configuration {
     val shadedDependencies = configurations.create("shadedDependencies").apply {
         isCanBeResolved = true
         isCanBeConsumed = true
-        configurations.findByName("api")?.extendsFrom(this)
+        configurations.findByName("implementation")?.extendsFrom(this)
     }
 
     tasks.named("jar", Jar::class.java).configure {
