@@ -43,13 +43,17 @@ fun Project.cacheDynamicAndChangingModules() {
  * Configures a custom `shadedDependencies` configuration used to embed shaded dependencies in the JAR.
  * Excludes certain metadata files and avoids duplicate entries.
  *
+ * @param implementation If true, the `implementation` configuration will extend from `shadedDependencies`.
  * @return The created `shadedDependencies` configuration.
  */
-fun Project.configureShadedDependencies(): Configuration {
+fun Project.configureShadedDependencies(implementation: Boolean = true): Configuration {
     val shadedDependencies = configurations.create("shadedDependencies").apply {
         isCanBeResolved = true
         isCanBeConsumed = true
-        configurations.findByName("implementation")?.extendsFrom(this)
+
+        if (implementation) {
+            configurations.findByName("implementation")?.extendsFrom(this)
+        }
     }
 
     tasks.named("jar", Jar::class.java).configure {
