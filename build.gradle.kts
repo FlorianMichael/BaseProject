@@ -18,7 +18,6 @@ repositories {
 
 dependencies {
     api("org.jetbrains.kotlin:kotlin-gradle-plugin:2.2.20")
-    api("io.github.gradle-nexus.publish-plugin:io.github.gradle-nexus.publish-plugin.gradle.plugin:2.0.0")
     compileOnly("net.fabricmc:fabric-loom:1.10-SNAPSHOT")
 }
 

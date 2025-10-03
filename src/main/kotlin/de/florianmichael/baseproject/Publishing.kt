@@ -17,17 +17,19 @@
 
 package de.florianmichael.baseproject
 
-import io.github.gradlenexus.publishplugin.NexusPublishExtension
+import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
+import org.gradle.api.publish.maven.tasks.PublishToMavenRepository
 import org.gradle.authentication.http.BasicAuthentication
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.get
 import org.gradle.plugins.signing.SigningExtension
-import java.net.URI
+import java.net.HttpURLConnection
+import java.util.*
 
 /**
  * Sets up Maven publishing using predefined repositories:
@@ -96,19 +98,58 @@ fun Project.configureLenni0451Repository() {
  * Automatically selects the snapshot or release URL based on the project version.
  *
  * URLs:
- * - Releases: `https://ossrh-staging-api.central.sonatype.com/service/local/`
- * - Snapshots: `https://central.sonatype.com/repository/maven-snapshots/`
+ * - Releases: `https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2`
+ * - Snapshots: `https://central.sonatype.com/repository/maven-snapshots`
  *
  * Requires authentication (OSSRH credentials via Gradle).
  */
 fun Project.configureOssrhRepository() {
-    apply(plugin = "io.github.gradle-nexus.publish-plugin")
-    extensions.getByType(NexusPublishExtension::class.java).apply {
-        repositories.sonatype {
-            nexusUrl.set(URI.create("https://ossrh-staging-api.central.sonatype.com/service/local/"))
-            snapshotRepositoryUrl.set(URI.create("https://central.sonatype.com/repository/maven-snapshots/"))
-            username.set(findProperty("ossrhUsername") as String?)
-            password.set(findProperty("ossrhPassword") as String?)
+    apply(plugin = "maven-publish")
+    extensions.getByType(PublishingExtension::class.java).apply {
+        val snapshot = project.version.toString().endsWith("SNAPSHOT")
+
+        val ossrhUsername = findProperty("ossrhUsername") as String?
+        val ossrhPassword = findProperty("ossrhPassword") as String?
+
+        repositories.maven {
+            name = "ossrh"
+            val releasesUrl = "https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2"
+            val snapshotsUrl = "https://central.sonatype.com/repository/maven-snapshots"
+            url = uri(if (snapshot) snapshotsUrl else releasesUrl)
+
+            credentials {
+                username = ossrhUsername
+                password = ossrhPassword
+            }
+            authentication {
+                create<BasicAuthentication>("basic")
+            }
+        }
+
+        tasks.withType(PublishToMavenRepository::class.java) {
+            if (!name.endsWith("ToOssrhRepository") || snapshot) {
+                return@withType
+            }
+
+            val mavenGroup = project.group.toString()
+
+            doLast {
+                val url = uri("https://ossrh-staging-api.central.sonatype.com/manual/upload/defaultRepository/$mavenGroup").toURL()
+
+                val connection = (url.openConnection() as HttpURLConnection).apply {
+                    requestMethod = "POST"
+                    val encodedAuth = Base64.getEncoder().encodeToString("${ossrhUsername}:${ossrhPassword}".toByteArray())
+                    setRequestProperty("Authorization", "Basic $encodedAuth")
+                }
+
+                if (connection.responseCode != 200) {
+                    throw GradleException(
+                        "Failed to close staging repository: ${connection.responseCode} ${connection.responseMessage}"
+                    )
+                }
+
+                connection.disconnect()
+            }
         }
     }
 }
@@ -144,7 +185,7 @@ data class DeveloperInfo(
 )
 
 fun Project.getDeveloperInfoFromProperties(devId: String? = null): List<DeveloperInfo> {
-    val id = findProperty("publishing_dev_id") as? String?: devId
+    val id = findProperty("publishing_dev_id") as? String ?: devId
     val name = findProperty("publishing_dev_name") as String?
     val mail = findProperty("publishing_dev_mail") as String?
 
