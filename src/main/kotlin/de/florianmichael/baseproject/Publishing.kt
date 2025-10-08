@@ -29,6 +29,7 @@ import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.get
 import org.gradle.plugins.signing.SigningExtension
 import java.net.HttpURLConnection
+import java.net.URL
 import java.util.*
 
 /**
@@ -132,11 +133,10 @@ fun Project.configureOssrhRepository() {
             }
 
             val mavenGroup = project.group.toString()
+            val closeUrl = "https://ossrh-staging-api.central.sonatype.com/manual/upload/defaultRepository/$mavenGroup"
 
-            doLast {
-                val url = uri("https://ossrh-staging-api.central.sonatype.com/manual/upload/defaultRepository/$mavenGroup").toURL()
-
-                val connection = (url.openConnection() as HttpURLConnection).apply {
+            doLast("closeOssrhRepository") {
+                val connection = (URL(closeUrl).openConnection() as HttpURLConnection).apply {
                     requestMethod = "POST"
                     val encodedAuth = Base64.getEncoder().encodeToString("${ossrhUsername}:${ossrhPassword}".toByteArray())
                     setRequestProperty("Authorization", "Basic $encodedAuth")
