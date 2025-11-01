@@ -38,6 +38,7 @@ typealias MappingsConfigurer = Project.() -> Unit
  *
  * @param version Optional override for the Yarn version.
  */
+@Deprecated("Yarn mappings will not be available after Minecraft 1.21.11. See https://fabricmc.net/2025/10/31/obfuscation.html for more information.")
 fun yarnMapped(version: String? = null): MappingsConfigurer = {
     val yarnVersion = version ?: property("yarn_mappings_version") as String
     dependencies {
