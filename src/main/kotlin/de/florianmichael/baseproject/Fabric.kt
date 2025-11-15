@@ -122,7 +122,9 @@ fun Project.setupFabric(mappings: MappingsConfigurer = mojangMapped()) {
                 "version" to projectVersion,
                 "implVersion" to "git-${projectName}-${projectVersion}:${latestCommitHash}",
                 "description" to projectDescription,
-                "mcVersion" to mcVersion
+                "mcVersion" to mcVersion,
+                "commitHash" to latestCommitHash,
+                "shortCommitHash" to latestCommitHash().take(7)
             ))
         }
     }
