@@ -73,6 +73,7 @@ fun Project.setupViaPublishing() {
  *
  * Requires authentication via basic username/password (credentials block).
  */
+@Deprecated("Will be replaced with my own repository in the future.")
 fun Project.configureLenni0451Repository() {
     apply(plugin = "maven-publish")
     extensions.getByType(PublishingExtension::class.java).apply {
