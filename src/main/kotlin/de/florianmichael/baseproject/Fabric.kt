@@ -58,7 +58,7 @@ fun mojangMapped(parchment: String? = null): MappingsConfigurer = {
     val parchmentVersion: String? = parchment ?: findProperty("parchment_version") as? String
     val loom = extensions.getByType(LoomGradleExtensionAPI::class.java)
     dependencies {
-        if (parchmentVersion == null) {
+        if (parchmentVersion == null || parchmentVersion.isBlank()) {
             "mappings"(loom.officialMojangMappings())
         } else {
             "mappings"(loom.layered {
