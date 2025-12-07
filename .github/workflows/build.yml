@@ -6,6 +6,7 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-24.04
+    timeout-minutes: 30
     steps:
       - name: Checkout Repository
         uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # 6.0.0
@@ -26,3 +27,4 @@ jobs:
         with:
           name: Artifacts
           path: build/libs/
+          if-no-files-found: error
