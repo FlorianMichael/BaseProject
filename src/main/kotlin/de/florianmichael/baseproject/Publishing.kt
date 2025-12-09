@@ -34,16 +34,16 @@ import java.util.*
 
 /**
  * Sets up Maven publishing using predefined repositories:
- * - Lenni0451's Reposilite
+ * - FlorianMichael's Reposilite
  * - OSSRH (Sonatype)
  *
- * Calls [configureLenni0451Repository], [configureOssrhRepository], and [configureGHPublishing].
+ * Calls [configureFlorianMichaelRepository], [configureOssrhRepository], and [configureGHPublishing].
  *
  * Required project property:
  * - `publishing_distribution`: GitHub/GitLab URL used for license and SCM metadata
  */
 fun Project.setupPublishing() {
-    configureLenni0451Repository()
+    configureFlorianMichaelRepository()
     configureOssrhRepository()
     configureGHPublishing()
 }
@@ -63,29 +63,34 @@ fun Project.setupViaPublishing() {
 }
 
 /**
- * Configures publishing to Lenni0451's Maven Reposilite repository.
+ * Configures publishing to FlorianMichael's Maven Reposilite repository.
  *
  * Chooses `snapshots` or `releases` sub-repo based on project version suffix.
  *
  * Example:
- * - If version ends with `SNAPSHOT`, publishes to `https://maven.lenni0451.net/snapshots`
- * - Otherwise, to `https://maven.lenni0451.net/releases`
+ * - If version ends with `SNAPSHOT`, publishes to `https://maven.florianmichael.de/snapshots`
+ * - Otherwise, to `https://maven.florianmichael.de/releases`
  *
  * Requires authentication via basic username/password (credentials block).
  */
-@Deprecated("Will be replaced with my own repository in the future.")
-fun Project.configureLenni0451Repository() {
+fun Project.configureFlorianMichaelRepository() {
+    val reposiliteUsername = findProperty("reposiliteUsername") as String?
+    val reposilitePassword = findProperty("reposilitePassword") as String?
+    if (reposiliteUsername == null || reposilitePassword == null) {
+        return
+    }
+
     apply(plugin = "maven-publish")
     extensions.getByType(PublishingExtension::class.java).apply {
         repositories.maven {
             name = "reposilite"
             url = uri(
-                "https://maven.lenni0451.net/" +
+                "https://maven.florianmichael.de/" +
                     if (project.version.toString().endsWith("SNAPSHOT")) "snapshots" else "releases"
             )
             credentials {
-                username = findProperty("reposiliteUsername") as String?
-                password = findProperty("reposilitePassword") as String?
+                username = reposiliteUsername
+                password = reposilitePassword
             }
             authentication {
                 create<BasicAuthentication>("basic")
@@ -106,12 +111,15 @@ fun Project.configureLenni0451Repository() {
  * Requires authentication (OSSRH credentials via Gradle).
  */
 fun Project.configureOssrhRepository() {
+    val ossrhUsername = findProperty("ossrhUsername") as String?
+    val ossrhPassword = findProperty("ossrhPassword") as String?
+    if (ossrhUsername == null || ossrhPassword == null) {
+        return
+    }
+
     apply(plugin = "maven-publish")
     extensions.getByType(PublishingExtension::class.java).apply {
         val snapshot = project.version.toString().endsWith("SNAPSHOT")
-
-        val ossrhUsername = findProperty("ossrhUsername") as String?
-        val ossrhPassword = findProperty("ossrhPassword") as String?
 
         repositories.maven {
             name = "ossrh"
