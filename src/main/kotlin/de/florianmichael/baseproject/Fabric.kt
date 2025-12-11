@@ -70,7 +70,7 @@ fun mojangMapped(parchment: String? = null): MappingsConfigurer = {
 }
 
 /**
- * Sets up Fabric Loom with Minecraft dependencies, mappings, Kotlin support, and mod metadata processing.
+ * Sets up Fabric Loom (without remapping) with Minecraft dependencies, mappings, Kotlin support, and mod metadata processing.
  *
  * Required project properties:
  * - `minecraft_version`: Minecraft version to target
@@ -83,7 +83,48 @@ fun mojangMapped(parchment: String? = null): MappingsConfigurer = {
  * @param mappings The mappings configuration to apply (Yarn or Mojang+Parchment)
  */
 fun Project.setupFabric(mappings: MappingsConfigurer = mojangMapped()) {
-    plugins.apply("fabric-loom")
+    plugins.apply("net.fabricmc.fabric-loom")
+
+    dependencies {
+        "implementation"("net.fabricmc:fabric-loader:${property("fabric_loader_version")}")
+    }
+    pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
+        dependencies {
+            "implementation"("net.fabricmc:fabric-language-kotlin:${property("fabric_kotlin_version")}")
+        }
+    }
+    setupFabricShared(mappings)
+}
+
+/**
+ * Sets up Fabric Loom (with remapping) with Minecraft dependencies, mappings, Kotlin support, and mod metadata processing.
+ *
+ * Required project properties:
+ * - `minecraft_version`: Minecraft version to target
+ * - `fabric_loader_version`: Fabric loader version
+ *
+ * Optional project properties:
+ * - `fabric_kotlin_version`: Fabric Kotlin language module version (used if Kotlin plugin is applied)
+ * - `supported_minecraft_versions`: Used in mod metadata if provided
+ *
+ * @param mappings The mappings configuration to apply (Yarn or Mojang+Parchment)
+ */
+@Deprecated("This is only required for Minecraft versions 1.21.11 and older. For newer versions, use setupFabric() instead.")
+fun Project.setupFabricRemap(mappings: MappingsConfigurer = mojangMapped()) {
+    plugins.apply("net.fabricmc.fabric-loom-remap")
+
+    dependencies {
+        "modImplementation"("net.fabricmc:fabric-loader:${property("fabric_loader_version")}")
+    }
+    pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
+        dependencies {
+            "modImplementation"("net.fabricmc:fabric-language-kotlin:${property("fabric_kotlin_version")}")
+        }
+    }
+    setupFabricShared(mappings)
+}
+
+private fun Project.setupFabricShared(mappings: MappingsConfigurer = mojangMapped()) {
     val accessWidenerFile = file("src/main/resources/${project.name.lowercase()}.accesswidener")
     if (accessWidenerFile.exists()) {
         extensions.getByType(LoomGradleExtensionAPI::class.java).apply {
@@ -96,12 +137,6 @@ fun Project.setupFabric(mappings: MappingsConfigurer = mojangMapped()) {
     }
     dependencies {
         "minecraft"("com.mojang:minecraft:${property("minecraft_version")}")
-        "modImplementation"("net.fabricmc:fabric-loader:${property("fabric_loader_version")}")
-    }
-    pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
-        dependencies {
-            "modImplementation"("net.fabricmc:fabric-language-kotlin:${property("fabric_kotlin_version")}")
-        }
     }
     mappings()
     tasks.named<ProcessResources>("processResources").configure {
@@ -162,6 +197,7 @@ fun Project.configureJij(): Configuration {
  *
  * @return The created or existing `modJij` configuration.
  */
+@Deprecated("This is only required if you use setupFabricRemap(). Prefer using configureJij() instead.")
 fun Project.configureModJij(): Configuration {
     val jijConfig = configurations.maybeCreate("modJij")
 
@@ -177,6 +213,7 @@ fun Project.configureModJij(): Configuration {
  *
  * @param name The name of the submodule
  */
+@Deprecated("This is only required if you use setupFabricRemap(). Prefer using configureJij() instead.")
 fun Project.includeFabricSubmodule(name: String) {
     dependencies {
         project(mapOf("path" to ":$name", "configuration" to "namedElements")).apply {
@@ -218,8 +255,14 @@ fun Project.includeTransitiveJijDependencies() {
  * @param modules The Fabric API modules to include.
  */
 fun Project.includeFabricApiModules(vararg modules: String) {
-    configureModJij()
-    configureFabricApiModules("modJij", *modules)
+    val remap = pluginManager.hasPlugin("net.fabricmc.fabric-loom-remap")
+    if (remap) {
+        configureModJij()
+        configureFabricApiModules("modJij", *modules)
+    } else {
+        configureJij()
+        configureFabricApiModules("jij", *modules)
+    }
 }
 
 /**
@@ -230,7 +273,8 @@ fun Project.includeFabricApiModules(vararg modules: String) {
  * @param modules The Fabric API modules to include.
  */
 fun Project.loadFabricApiModules(vararg modules: String) {
-    configureFabricApiModules("modImplementation", *modules)
+    val remap = pluginManager.hasPlugin("net.fabricmc.fabric-loom-remap")
+    configureFabricApiModules(if (remap) "modImplementation" else "implementation", *modules)
 }
 
 /**
