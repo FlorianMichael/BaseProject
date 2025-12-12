@@ -18,7 +18,7 @@ repositories {
 
 dependencies {
     api("org.jetbrains.kotlin:kotlin-gradle-plugin:2.2.21")
-    compileOnly("net.fabricmc:fabric-loom:1.14-SNAPSHOT")
+    compileOnly("net.fabricmc:fabric-loom:1.10-SNAPSHOT")
 }
 
 java {
