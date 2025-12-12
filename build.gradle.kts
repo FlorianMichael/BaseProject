@@ -32,6 +32,11 @@ tasks {
         from("LICENSE") {
             rename { "LICENSE_${projectName}" }
         }
+
+        val projectVersion = project.version
+        manifest {
+            attributes(mapOf("Implementation-Version" to projectVersion))
+        }
     }
 
     publishPlugins {

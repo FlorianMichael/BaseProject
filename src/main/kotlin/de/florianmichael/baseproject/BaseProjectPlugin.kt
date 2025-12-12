@@ -23,7 +23,7 @@ import org.gradle.api.Project
 open class BaseProjectPlugin : Plugin<Project> {
 
     override fun apply(target: Project) {
-        target.logger.info("Applying BaseProject conventions to ${target.name}")
+        target.logger.lifecycle("BaseProject: " + BaseProjectPlugin::class.java.getPackage().implementationVersion)
     }
 
 }
