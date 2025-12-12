@@ -159,7 +159,7 @@ private fun Project.setupFabricShared(mappings: MappingsConfigurer = mojangMappe
                 "description" to projectDescription,
                 "mcVersion" to mcVersion,
                 "commitHash" to latestCommitHash,
-                "shortCommitHash" to latestCommitHash().take(7)
+                "shortCommitHash" to latestCommitHash.take(7)
             ))
         }
     }
