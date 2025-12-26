@@ -54,11 +54,12 @@ fun yarnMapped(version: String? = null): MappingsConfigurer = {
  *
  * @param parchment Optional override for the Parchment version.
  */
+@Deprecated("This is only required if you use setupFabricRemap().")
 fun mojangMapped(parchment: String? = null): MappingsConfigurer = {
     val parchmentVersion: String? = parchment ?: findProperty("parchment_version") as? String
     val loom = extensions.getByType(LoomGradleExtensionAPI::class.java)
     dependencies {
-        if (parchmentVersion == null || parchmentVersion.isBlank()) {
+        if (parchmentVersion.isNullOrBlank()) {
             "mappings"(loom.officialMojangMappings())
         } else {
             "mappings"(loom.layered {
@@ -79,10 +80,8 @@ fun mojangMapped(parchment: String? = null): MappingsConfigurer = {
  * Optional project properties:
  * - `fabric_kotlin_version`: Fabric Kotlin language module version (used if Kotlin plugin is applied)
  * - `supported_minecraft_versions`: Used in mod metadata if provided
- *
- * @param mappings The mappings configuration to apply (Yarn or Mojang+Parchment)
  */
-fun Project.setupFabric(mappings: MappingsConfigurer = mojangMapped()) {
+fun Project.setupFabric() {
     plugins.apply("net.fabricmc.fabric-loom")
 
     dependencies {
@@ -93,7 +92,7 @@ fun Project.setupFabric(mappings: MappingsConfigurer = mojangMapped()) {
             "implementation"("net.fabricmc:fabric-language-kotlin:${property("fabric_kotlin_version")}")
         }
     }
-    setupFabricShared(mappings)
+    setupFabricShared(null)
 }
 
 /**
@@ -124,7 +123,7 @@ fun Project.setupFabricRemap(mappings: MappingsConfigurer = mojangMapped()) {
     setupFabricShared(mappings)
 }
 
-private fun Project.setupFabricShared(mappings: MappingsConfigurer = mojangMapped()) {
+private fun Project.setupFabricShared(mappings: MappingsConfigurer? = mojangMapped()) {
     val accessWidenerFile = file("src/main/resources/${project.name.lowercase()}.accesswidener")
     if (accessWidenerFile.exists()) {
         extensions.getByType(LoomGradleExtensionAPI::class.java).apply {
@@ -138,7 +137,7 @@ private fun Project.setupFabricShared(mappings: MappingsConfigurer = mojangMappe
     dependencies {
         "minecraft"("com.mojang:minecraft:${property("minecraft_version")}")
     }
-    mappings()
+    mappings?.invoke(this)
     tasks.named<ProcessResources>("processResources").configure {
         val projectName = project.name
         val projectVersion = project.version
@@ -153,14 +152,16 @@ private fun Project.setupFabricShared(mappings: MappingsConfigurer = mojangMappe
         }
         val latestCommitHash = latestCommitHash()
         filesMatching("fabric.mod.json") {
-            expand(mapOf(
-                "version" to projectVersion,
-                "implVersion" to "git-${projectName}-${projectVersion}:${latestCommitHash}",
-                "description" to projectDescription,
-                "mcVersion" to mcVersion,
-                "commitHash" to latestCommitHash,
-                "shortCommitHash" to latestCommitHash.take(7)
-            ))
+            expand(
+                mapOf(
+                    "version" to projectVersion,
+                    "implVersion" to "git-${projectName}-${projectVersion}:${latestCommitHash}",
+                    "description" to projectDescription,
+                    "mcVersion" to mcVersion,
+                    "commitHash" to latestCommitHash,
+                    "shortCommitHash" to latestCommitHash.take(7)
+                )
+            )
         }
     }
 
