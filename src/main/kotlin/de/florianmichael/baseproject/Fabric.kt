@@ -27,6 +27,7 @@ import org.gradle.kotlin.dsl.maven
 import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.repositories
 import org.gradle.language.jvm.tasks.ProcessResources
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmExtension
 
 typealias MappingsConfigurer = Project.() -> Unit
 
@@ -162,6 +163,12 @@ private fun Project.setupFabricShared(mappings: MappingsConfigurer? = mojangMapp
                     "shortCommitHash" to latestCommitHash.take(7)
                 )
             )
+        }
+    }
+
+    pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
+        extensions.getByType(KotlinJvmExtension::class.java).apply {
+            compilerOptions.freeCompilerArgs.add("-Xjsr305=ignore")
         }
     }
 
