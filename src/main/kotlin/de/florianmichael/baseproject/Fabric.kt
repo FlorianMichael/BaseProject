@@ -188,6 +188,21 @@ fun Project.configureJij(): Configuration {
 }
 
 /**
+ * Creates or retrieves the `jij` configuration and sets it to be extended by:
+ * - `implementation`
+ * - `include`
+ * - `api`
+ *
+ * This is the same as [configureJij] except that it also extends the `api` configuration. Use this if the JiJ dependencies
+ * should also be available to consumers of the project.
+ */
+fun Project.configureApiJij(): Configuration {
+    return configureJij().also {
+        configurations.getByName("api").extendsFrom(it)
+    }
+}
+
+/**
  * Creates or retrieves the `modJij` configuration and sets it to be extended by:
  * - `modImplementation`
  * - `modCompileOnlyApi`
