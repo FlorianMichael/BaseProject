@@ -21,6 +21,7 @@ import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.api.plugins.BasePluginExtension
 import org.gradle.api.plugins.JavaPluginExtension
+import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.api.tasks.javadoc.Javadoc
 import org.gradle.external.javadoc.StandardJavadocDocletOptions
@@ -28,6 +29,7 @@ import org.gradle.jvm.tasks.Jar
 import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.repositories
+import org.gradle.kotlin.dsl.the
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmExtension
 
 /**
@@ -154,5 +156,25 @@ fun Project.renameLicenseFile() {
         from("LICENSE") {
             rename { "LICENSE_$projectName" }
         }
+    }
+}
+
+/**
+ * Creates a bidirectional source set where both the new source set and the main source set depend on each other.
+ * The created source set is also added to the JAR task.
+ */
+fun Project.createLinkingSourceSet(name: String) {
+    val sourceSets = the<SourceSetContainer>()
+
+    val main = sourceSets.getByName("main")
+    val newSet = sourceSets.create(name) {
+        compileClasspath += main.output + main.compileClasspath
+        runtimeClasspath += compileClasspath
+
+        main.runtimeClasspath += output + runtimeClasspath
+    }
+
+    tasks.named("jar", Jar::class.java).configure {
+        from(newSet.output)
     }
 }
