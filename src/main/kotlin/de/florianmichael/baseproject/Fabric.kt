@@ -225,7 +225,7 @@ fun Project.configureModJij(): Configuration {
     val jijConfig = configurations.maybeCreate("modJij")
 
     configurations.getByName("modImplementation").extendsFrom(jijConfig)
-    configurations.getByName("modCompileOnlyApi").extendsFrom(jijConfig)
+    configurations.getByName("modApi").extendsFrom(jijConfig)
     configurations.getByName("include").extendsFrom(jijConfig)
 
     return jijConfig
@@ -241,7 +241,7 @@ fun Project.includeFabricSubmodule(name: String) {
     dependencies {
         project(mapOf("path" to ":$name", "configuration" to "namedElements")).apply {
             "implementation"(this)
-            "compileOnlyApi"(this)
+            "api"(this)
         }
         "include"(project(":$name"))
     }
@@ -257,15 +257,15 @@ fun Project.includeTransitiveJijDependencies() {
         jijConfig.incoming.resolutionResult.allDependencies.forEach { dep ->
             val requested = dep.requested.displayName
 
-            val compileOnlyDep = dependencies.create(requested) {
+            val apiDep = dependencies.create(requested) {
                 isTransitive = false
             }
 
-            val implDep = dependencies.create(compileOnlyDep)
+            val implDep = dependencies.create(apiDep)
 
-            dependencies.add("compileOnlyApi", compileOnlyDep)
+            dependencies.add("api", apiDep)
             dependencies.add("implementation", implDep)
-            dependencies.add("include", compileOnlyDep)
+            dependencies.add("include", apiDep)
         }
     }
 }
