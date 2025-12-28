@@ -68,7 +68,7 @@ fun Project.setupViaPublishing() {
  * Chooses `snapshots` or `releases` sub-repo based on project version suffix.
  *
  * Example:
- * - If version ends with `SNAPSHOT`, publishes to `https://maven.florianmichael.de/snapshots`
+ * - If version contains `SNAPSHOT`, publishes to `https://maven.florianmichael.de/snapshots`
  * - Otherwise, to `https://maven.florianmichael.de/releases`
  *
  * Requires authentication via basic username/password (credentials block).
@@ -86,7 +86,7 @@ fun Project.configureFlorianMichaelRepository() {
             name = "reposilite"
             url = uri(
                 "https://maven.florianmichael.de/" +
-                    if (project.version.toString().endsWith("SNAPSHOT")) "snapshots" else "releases"
+                    if (project.version.toString().contains("SNAPSHOT")) "snapshots" else "releases"
             )
             credentials {
                 username = reposiliteUsername
@@ -119,7 +119,7 @@ fun Project.configureOssrhRepository() {
 
     apply(plugin = "maven-publish")
     extensions.getByType(PublishingExtension::class.java).apply {
-        val snapshot = project.version.toString().endsWith("SNAPSHOT")
+        val snapshot = project.version.toString().contains("SNAPSHOT")
 
         repositories.maven {
             name = "ossrh"
