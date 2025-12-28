@@ -21,6 +21,8 @@ import net.fabricmc.loom.api.LoomGradleExtensionAPI
 import net.fabricmc.loom.api.fabricapi.FabricApiExtension
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
+import org.gradle.api.artifacts.component.ModuleComponentIdentifier
+import org.gradle.api.artifacts.result.ResolvedDependencyResult
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.maven
@@ -251,21 +253,41 @@ fun Project.includeFabricSubmodule(name: String) {
  * Add support to the jar in jar system from Fabric to support transitive dependencies by manually proxying them into the jar.
  */
 fun Project.includeTransitiveJijDependencies() {
-    afterEvaluate {
-        val jijConfig = configurations.findByName("jij") ?: return@afterEvaluate
+    val jijConfig = configurations.findByName("jij") ?: return
 
-        jijConfig.incoming.resolutionResult.allDependencies.forEach { dep ->
-            val requested = dep.requested.displayName
+    if (pluginManager.hasPlugin("net.fabricmc.fabric-loom-remap")) {
+        // Include directly via dependencies for the remap plugin as the configurations aren't touched until later.
+        includeTransitiveJijRemapDependencies(jijConfig)
+        return
+    }
 
-            val apiDep = dependencies.create(requested) {
-                isTransitive = false
+    // New method via components since the configurations will be accessed earlier on.
+    fun configure(targetName: String) {
+        configurations.findByName(targetName)?.defaultDependencies {
+            jijConfig.incoming.resolutionResult.allComponents.mapNotNull { it.id as? ModuleComponentIdentifier }.forEach { id ->
+                val notation = "${id.group}:${id.module}:${id.version}"
+                add(dependencies.create(notation) {
+                    isTransitive = false
+                })
             }
+        }
+    }
 
-            val implDep = dependencies.create(apiDep)
+    configure("api")
+    configure("implementation")
+    configure("include")
+}
 
-            dependencies.add("api", apiDep)
-            dependencies.add("implementation", implDep)
-            dependencies.add("include", apiDep)
+private fun Project.includeTransitiveJijRemapDependencies(jijConfig: Configuration) {
+    afterEvaluate {
+        jijConfig.incoming.resolutionResult.allDependencies.forEach { dep ->
+            dependencies.create(dep.requested.displayName) {
+                isTransitive = false
+            }.apply {
+                dependencies.add("api", this)
+                dependencies.add("implementation", dependencies.create(this))
+                dependencies.add("include", this)
+            }
         }
     }
 }
